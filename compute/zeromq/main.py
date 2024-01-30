@@ -1,16 +1,24 @@
 import zmq
-import sys
-import time
 
 def listen(sub: zmq.Socket):
+    topic = input("Topic (leave empty for all): ")
     print("Listening...")
+    sub.subscribe(topic)
     while True:
-        message = sub.recv_string()
-        print("Received: %s" % message)
+        recieved = sub.recv_string()
+        topic, message = recieved.split(' ', 1)
+        print(f"Received from topic {topic}: {message}")
 
 def send(pub: zmq.Socket):
+    topic = input("Topic: ")
     message = input("Message: ")
-    pub.send_string(message)
+    
+    if topic == '':
+        send = message
+    else:
+        send = topic + ' ' + message
+
+    pub.send_string(send)
 
 def main():
     context = zmq.Context()
