@@ -24,8 +24,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_ZEROMQ_PUB_URL: z.string(),
-    NEXT_PUBLIC_ZEROMQ_SUB_URL: z.string(),
+    NEXT_PUBLIC_SOCKETIO_PORT: z.string().default("5557"),
   },
 
   /**
@@ -35,9 +34,7 @@ export const env = createEnv({
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_ZEROMQ_PUB_URL: process.env.NEXT_PUBLIC_ZEROMQ_PUB_URL,
-    NEXT_PUBLIC_ZEROMQ_SUB_URL: process.env.NEXT_PUBLIC_ZEROMQ_SUB_URL,
-    // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+    NEXT_PUBLIC_SOCKETIO_PORT: process.env.NEXT_PUBLIC_SOCKETIO_PORT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
