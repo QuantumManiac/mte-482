@@ -6,34 +6,31 @@ import { io, type Socket } from "socket.io-client";
 import { env } from "~/env"
 
 interface ServerToClientEvents {
-    battery: (b: number) => void;
+    zmq_battery: (b: number) => void;
 }
 
 interface ClientToServerEvents {
-    getBattery: () => void;
+    ui_message: ({topic, msg}: {topic: string, msg: string}) => void;
 }
 
 export default function StatusBar() {
     useEffect(() => {
         function onBatteryEvent(battery: number) {
-            console.log("Battery: ", battery);
             setBattery(battery);
         }
 
-
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
         console.log("Connected to socket.io server");
-        socket.on('battery', onBatteryEvent);
+        socket.on('zmq_battery', onBatteryEvent);
 
         return () => {
             socket.disconnect();
-            socket.off('battery', onBatteryEvent);
+            socket.off('zmq_battery', onBatteryEvent);
         }
     }
     , []);
 
     const [battery, setBattery] = useState<number | undefined>(0);
-
 
     return (
         <div className="border text-white border-white text-sm p-3">
