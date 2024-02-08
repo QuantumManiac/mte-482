@@ -2,6 +2,8 @@ import zmq
 import gpiozero
 import board
 import busio
+import threading
+import time
 
 
 ZMQ_PUB = "tcp://127.0.0.1:5556"
@@ -70,7 +72,17 @@ def main():
     ctx = zmq.Context()
     i2c = busio.I2C(board.SCL, board.SDA)
 
+    adc_thread = threading.Thread(target=adc_thread, args=(ctx, i2c))
+    rfid_thread = threading.Thread(target=rfid_thread, args=(ctx, i2c))
+    pushbutton_thread = threading.Thread(target=pushbutton_thread, args=(ctx,))
+    imu_thread = threading.Thread(target=imu_thread, args=(ctx, i2c))
 
+    adc_thread.start()
+    rfid_thread.start()
+    pushbutton_thread.start()
+    imu_thread.start()
+
+    
 
 if __name__ == '__main__':
     main()
