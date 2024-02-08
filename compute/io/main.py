@@ -8,7 +8,7 @@ import time
 
 ZMQ_PUB = "tcp://127.0.0.1:5556"
 
-def adc_thread(zmq: zmq.Context, i2c: busio.I2C):
+def adc(zmq: zmq.Context, i2c: busio.I2C):
     import adafruit_ads1x15.ads1115 as ADS
     adc = ADS.ADS1115(i2c)
 
@@ -23,7 +23,7 @@ def adc_thread(zmq: zmq.Context, i2c: busio.I2C):
         time.sleep(0.1)
     # pub = setup_zmq_pub(zmq)
 
-def rfid_thread(zqm: zmq.Context, i2c: busio.I2C):
+def rfid(zmq: zmq.Context, i2c: busio.I2C):
     from adafruit_pn532.i2c import PN532_I2C
     
     pn532 = PN532_I2C(i2c, debug=False)
@@ -39,7 +39,7 @@ def rfid_thread(zqm: zmq.Context, i2c: busio.I2C):
 
     # pub = setup_zmq_pub(zmq)
 
-def pushbutton_thread(zmq: zmq.Context):
+def pushbutton(zmq: zmq.Context):
     pin = gpiozero.InputDevice(17, pull_up=True)
     # pub = setup_zmq_pub(zmq)
 
@@ -47,7 +47,7 @@ def pushbutton_thread(zmq: zmq.Context):
         print(f'[BUTTON] {pin.value}')
 
 
-def imu_thread(zmq: zmq.Context, i2c: busio.I2C):
+def imu(zmq: zmq.Context, i2c: busio.I2C):
     from adafruit_bno08x import BNO_REPORT_ACCELEROMETER
     from adafruit_bno08x.i2c import BNO08X_I2C
     # pub = setup_zmq_pub(zmq)
@@ -64,10 +64,6 @@ def setup_zmq_pub(context: zmq.Context):
     return pub
 
 
-
-
-
-
 def main():
     ctx = zmq.Context()
     i2c = busio.I2C(board.SCL, board.SDA)
@@ -82,7 +78,7 @@ def main():
     pushbutton_thread.start()
     imu_thread.start()
 
-    
+
 
 if __name__ == '__main__':
     main()
