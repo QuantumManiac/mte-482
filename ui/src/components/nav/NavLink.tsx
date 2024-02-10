@@ -12,7 +12,7 @@ interface NavLinkProps {
 export default function NavLink({name, path}: NavLinkProps) {
     const pathName = usePathname();
     return (
-        <div className={
+      <Link href={path} className={
             clsx(
               "border border-white flex grow items-center justify-center",
               {
@@ -21,10 +21,9 @@ export default function NavLink({name, path}: NavLinkProps) {
               }
             )
         }>
-          <Link href={path}>
+          
             <h1 className="text-center text-white font-bold text-lg p-5">{name}</h1>
-          </Link>
-        </div>
+    </Link>
     )
 
 }
