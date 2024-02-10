@@ -4,6 +4,7 @@ import board
 import busio
 import threading
 from time import sleep
+from adafruit_extended_bus import ExtendedI2C as I2C
 
 ZMQ_PUB = "tcp://127.0.0.1:5556"
 
@@ -62,6 +63,16 @@ def imu(zmq: zmq.Context, i2c: busio.I2C):
         print("[IMU] X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
         sleep(0.1)
 
+def voltage(zmq: zmq.Context):
+    from ina226 import INA226
+    ina = INA226(busnum=3)
+    ina.configure(bus_ct=INA226.VCT_1100us_BIT)
+    sleep(1)
+    while True:
+        print("[VOLTAGE] Bus Voltage: %0.6f" % (ina.voltage() * 0.95))
+        sleep(0.1)
+    
+
 def setup_zmq_pub(context: zmq.Context):
     pub = context.socket(zmq.PUB)
     pub.connect(ZMQ_PUB)
@@ -70,17 +81,19 @@ def setup_zmq_pub(context: zmq.Context):
 
 def main():
     ctx = zmq.Context()
-    i2c = busio.I2C(board.SCL, board.SDA)
+    i2c = I2C(3)
 
     adc_thread = threading.Thread(target=adc, args=(ctx, i2c))
     rfid_thread = threading.Thread(target=rfid, args=(ctx, i2c))
     pushbutton_thread = threading.Thread(target=pushbutton, args=(ctx,))
     imu_thread = threading.Thread(target=imu, args=(ctx, i2c))
+    voltage_thread = threading.Thread(target=voltage, args=(ctx,))
 
     adc_thread.start()
     rfid_thread.start()
     pushbutton_thread.start()
     imu_thread.start()
+    voltage_thread.start()
 
 
 
