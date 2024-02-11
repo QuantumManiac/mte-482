@@ -7,7 +7,7 @@ import { env } from '~/env'
 import { type IMUData } from '~/types/IMUData'
 
 interface ServerToClientEvents {
-    zmq_battery: (b: number) => void
+    zmq_battery_voltage: (b: number) => void
     zmq_push_assist: (b: boolean) => void
     zmq_rfid: (b: string) => void
     zmq_imu: (b: IMUData) => void
@@ -39,14 +39,14 @@ export default function Debug() {
 
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
         console.log("Connected to socket.io server")
-        socket.on('zmq_battery', onBatteryEvent)
+        socket.on('zmq_battery_voltage', onBatteryEvent)
         socket.on('zmq_push_assist', onAssistEvent)
         socket.on('zmq_rfid', onRfidEvent)
         socket.on('zmq_imu', onImuEvent)
 
         return () => {
             socket.disconnect()
-            socket.off('zmq_battery', onBatteryEvent)
+            socket.off('zmq_battery_voltage', onBatteryEvent)
             socket.off('zmq_push_assist', onAssistEvent)
             socket.off('zmq_rfid', onRfidEvent)
             socket.off('zmq_imu', onImuEvent)
