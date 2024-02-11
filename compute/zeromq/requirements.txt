@@ -1,1 +1,12 @@
+bidict==0.22.1
+dnspython==2.5.0
+eventlet==0.35.1
+greenlet==3.0.3
+h11==0.14.0
+netifaces==0.10.6
+python-engineio==4.9.0
+python-socketio==5.11.1
 pyzmq==25.1.2
+simple-websocket==1.0.0
+websocket-client==1.7.0
+wsproto==1.2.0

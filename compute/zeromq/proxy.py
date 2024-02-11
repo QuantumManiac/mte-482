@@ -3,6 +3,7 @@ import socketio
 import threading
 import time
 import eventlet
+import json
 
 # Thread for proxying messages between publisher and subscriber
 def zmq_server(context: zmq.Context):
@@ -45,6 +46,12 @@ def zmq_to_sio(context: zmq.Context):
     with sio:
         while True:
             topic, msg = sub.recv_string().split(' ', 1)
+
+            try :
+                msg: dict = json.loads(msg)
+            except ValueError:
+                pass
+
             sio.emit('zmq_message', {'topic': topic, 'msg': msg})
 
 if __name__ == '__main__':
