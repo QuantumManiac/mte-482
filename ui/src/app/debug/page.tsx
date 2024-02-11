@@ -55,7 +55,7 @@ export default function Debug() {
     , [])
     return (
         <main>
-            <h1>Battery: {battery ?? "???"}</h1>
+            <h1>Battery Voltage: {battery ?? "???"}</h1>
             <h1>Assist: {assist ?? "???"}</h1>
             <h1>Rfid: {rfid ?? "???"}</h1>
             <h1>Imu: {imu?.accel_x ?? "???"}, {imu?.accel_y ?? "???"}, {imu?.accel_z ?? "???"}</h1>

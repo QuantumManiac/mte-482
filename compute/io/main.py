@@ -35,10 +35,10 @@ def rfid(zmq: zmq.Context, i2c: busio.I2C):
     while True:
         uid = pn532.get_passive_target()
         if uid is not None:
-            print("[RFID] Found card with UID:", "-".join(f"{i:x}" for i in uid))
+            # print("[RFID] Found card with UID:", "-".join(f"{i:x}" for i in uid))
             send_zmq_msg(pub, "rfid", "-".join(f"{i:x}" for i in uid))
         else:
-            print("[RFID] No RFID")
+            send_zmq_msg(pub, "rfid", "00-00-00-00")
         sleep(0.1)
         pn532.listen_for_passive_target(timeout=0.1)
 
@@ -47,7 +47,7 @@ def pushbutton(zmq: zmq.Context):
     pub = setup_zmq_pub(zmq)
 
     while True:
-        print(f'[BUTTON] {pin.value}')
+        # print(f'[BUTTON] {pin.value}')
         send_zmq_msg(pub, "push_assist", str(pin.value))
         sleep(0.1)
 
@@ -61,7 +61,7 @@ def imu(zmq: zmq.Context, i2c: busio.I2C):
 
     while True:
         accel_x, accel_y, accel_z = bno.acceleration
-        print("[IMU] X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
+        # print("[IMU] X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
         send_zmq_json(pub, "imu", {
             "accel_x": accel_x,
             "accel_y": accel_y,
@@ -75,7 +75,7 @@ def voltage(zmq: zmq.Context):
     ina.configure(bus_ct=INA226.VCT_1100us_BIT)
     pub = setup_zmq_pub(zmq)
     while True:
-        print("[VOLTAGE] Bus Voltage: %0.6f" % (ina.voltage() * 0.95))
+        # print("[VOLTAGE] Bus Voltage: %0.6f" % (ina.voltage() * 0.95))
         send_zmq_msg(pub, "battery_voltage", str(ina.voltage() * 0.95))
         sleep(0.1)
     

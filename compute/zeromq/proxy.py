@@ -25,12 +25,12 @@ def sio_server(sio: socketio.Server, context: zmq.Context):
 
     @sio.on('zmq_message')
     def zmq_message(event, data):
-        print(f'[from ZMQ] zmq_{data["topic"]}: {data["msg"]}')
+        # print(f'[from ZMQ] zmq_{data["topic"]}: {data["msg"]}')
         sio.emit(f'zmq_{data["topic"]}', data['msg'])
 
     @sio.on('ui_message')
     def ui_message(event, data):
-        print(f'[from UI] ui_{data["topic"]}: {data["msg"]}')
+        # print(f'[from UI] ui_{data["topic"]}: {data["msg"]}')
         pub.send_string(f'ui_{data["topic"]} {data["msg"]}')
 
     eventlet.wsgi.server(eventlet.listen(('', 5557)), app, log_output=False)
