@@ -1,7 +1,6 @@
 'use client';
 
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 
 interface BatteryIndicatorProps {
     value?: number;
@@ -32,7 +31,7 @@ function getBatteryStatus(value: number | undefined): BatteryStatus {
 
 export default function BatteryIndicator({value}: BatteryIndicatorProps) {
     const batteryStatus = getBatteryStatus(value);
-    
+
     return (
         <div className={
             clsx(

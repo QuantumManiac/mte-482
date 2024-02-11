@@ -25,6 +25,7 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_SOCKETIO_PORT: z.string().default("5557"),
+    NEXT_PUBLIC_IMGHOST_URL: z.string().default("http://localhost:8001"),
   },
 
   /**
@@ -35,6 +36,7 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_SOCKETIO_PORT: process.env.NEXT_PUBLIC_SOCKETIO_PORT,
+    NEXT_PUBLIC_IMGHOST_URL: process.env.NEXT_PUBLIC_IMGHOST_URL,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

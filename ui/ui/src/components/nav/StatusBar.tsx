@@ -6,7 +6,7 @@ import { io, type Socket } from "socket.io-client";
 import { env } from "~/env"
 
 interface ServerToClientEvents {
-    zmq_battery: (b: number) => void;
+    zmq_battery_voltage: (b: number) => void;
 }
 
 interface ClientToServerEvents {
@@ -21,11 +21,11 @@ export default function StatusBar() {
 
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
         console.log("Connected to socket.io server");
-        socket.on('zmq_battery', onBatteryEvent);
+        socket.on('zmq_battery_voltage', onBatteryEvent);
 
         return () => {
             socket.disconnect();
-            socket.off('zmq_battery', onBatteryEvent);
+            socket.off('zmq_battery_voltage', onBatteryEvent);
         }
     }
     , []);
