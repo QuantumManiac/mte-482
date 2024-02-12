@@ -17,7 +17,7 @@ interface ClientToServerEvents {
     ui_message: ({topic, msg}: {topic: string, msg: string}) => void
 }
 
-export default function Debug() {
+export default function Page() {
     const [battery, setBattery] = useState<number | undefined>(undefined)
     const [assist, setAssist] = useState<boolean | undefined>(undefined)
     const [rfid, setRfid] = useState<string | undefined>(undefined)

@@ -1,4 +1,4 @@
-export default async function Scan() {
+export default async function Page() {
   return (
     <main>
       Scan

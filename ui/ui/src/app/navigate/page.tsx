@@ -1,4 +1,4 @@
-export default async function Navigate() {
+export default async function Page() {
   return (
     <main>
       Navigate
