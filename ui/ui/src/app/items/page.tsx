@@ -5,6 +5,7 @@ import { db } from "~/server/db";
 export default async function Page() {
   async function handleAddToCart(item: Product): Promise<void> {
     'use server'
+    console.log("add to cart")
     const id = item.id;
     await db.product.update({
       where: { id },

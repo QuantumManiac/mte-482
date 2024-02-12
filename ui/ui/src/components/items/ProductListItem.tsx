@@ -1,3 +1,5 @@
+'use client'
+
 import { type Product } from "@prisma/client";
 
 interface ProductListItemProps {
@@ -5,7 +7,7 @@ interface ProductListItemProps {
     handleAddToCart: (item: Product) => void;
 }
 
-export default async function ProductListItem({ product, handleAddToCart }: ProductListItemProps) {
+export default function ProductListItem({ product, handleAddToCart }: ProductListItemProps) {
     return (
         <div className="border">
             <h3>{product.name}</h3>

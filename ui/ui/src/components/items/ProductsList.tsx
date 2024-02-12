@@ -1,8 +1,8 @@
-
+"use client"
 
 import { type Product } from "@prisma/client";
 import ProductListItem from "./ProductListItem";
-import { useState } from "react";
+import { useState} from "react";
 import ProductsListSearchBar from "./ProductsListSearchBar";
 
 
@@ -13,7 +13,7 @@ interface ProductsListProps {
 
 export default function ProductsList({ products, handleAddToCart }: ProductsListProps) {
     const [search, setSearch] = useState("");
-    const [filteredProducts, setFilteredProducts] = useState(products);
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
@@ -27,7 +27,7 @@ export default function ProductsList({ products, handleAddToCart }: ProductsList
         <div className="border border-black flex-1">
             <ProductsListSearchBar handleSearch={handleSearch} search={search} />
             {filteredProducts.map((product: Product) => (
-                <ProductListItem key={product.id} product={product} handleAddToCart={handleAddToCart} />
+                <ProductListItem key={product.id} handleAddToCart={handleAddToCart} product={product}/>
             ))}
         </div>
     );
