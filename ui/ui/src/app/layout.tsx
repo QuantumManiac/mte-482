@@ -16,8 +16,10 @@ export default function Layout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        <Navbar/>
-        {children}
+          <div className="pr-32">
+            {children}
+          </div>
+          <Navbar/>
       </body>
     </html>
   );

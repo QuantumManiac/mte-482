@@ -11,6 +11,7 @@ export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart }:
     return (
         <div className="border">
             <h3>{cartItem.name}</h3>
+            <p>{cartItem.location}</p>
             <button onClick={() => handleRemoveFromCart(cartItem.id)}>Remove</button>
         </div>
     );

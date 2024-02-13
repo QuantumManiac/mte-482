@@ -11,7 +11,9 @@ export default function ProductListItem({ product, handleAddToCart }: ProductLis
     return (
         <div className="border">
             <h3>{product.name}</h3>
+            <p>{product.description}</p>
             <a href={`/items/${product.id}`}>View</a>
+            <br />
             <button onClick={() => handleAddToCart(product)}>Add</button>
         </div>
     );

@@ -14,7 +14,7 @@ export default function NavLink({name, path}: NavLinkProps) {
     return (
       <Link href={path} className={
             clsx(
-              "border border-white flex grow items-center justify-center",
+              "border-y border-white flex grow items-center justify-center text-xl",
               {
                 "bg-gray-800": pathName === path,
                 "bg-gray-600": pathName !== path,

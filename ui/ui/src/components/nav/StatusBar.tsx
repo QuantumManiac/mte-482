@@ -33,7 +33,7 @@ export default function StatusBar() {
     const [battery, setBattery] = useState<number | undefined>(0);
 
     return (
-        <div className="border text-white border-white text-sm p-3">
+        <div className="border-b text-white border-white text-sm p-3">
             <BatteryIndicator value={battery}/>
         </div>
     )

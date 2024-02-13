@@ -6,10 +6,11 @@ interface ProductsListSearchBarProps {
 
 export default function ProductsListSearchBar({ handleSearch, search }: ProductsListSearchBarProps) {
   return (
-    <div className="border border-black flex-1">
+    <div className="border-y-2 px-1 text-2xl border-black">
       <input
+        className="w-full"
         type="text"
-        placeholder="Search"
+        placeholder="Search for items..."
         value={search}
         onChange={handleSearch}
       />

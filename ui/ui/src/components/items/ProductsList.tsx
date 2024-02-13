@@ -24,11 +24,13 @@ export default function ProductsList({ products, handleAddToCart }: ProductsList
     };
 
     return (
-        <div className="border border-black flex-1">
+        <div className="flex-1 border-r-2 border-black">
             <ProductsListSearchBar handleSearch={handleSearch} search={search} />
-            {filteredProducts.map((product: Product) => (
-                <ProductListItem key={product.id} handleAddToCart={handleAddToCart} product={product}/>
-            ))}
+            <div className="overflow-y-scroll">
+                {filteredProducts.map((product: Product) => (
+                    <ProductListItem key={product.id} handleAddToCart={handleAddToCart} product={product}/>
+                ))}
+            </div>
         </div>
     );
 }
