@@ -4,13 +4,15 @@ import { useEffect, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
 import { env } from '~/env'
 
-import { type IMUData } from '~/types/IMUData'
+import type IMUData from '~/types/IMUData'
+import type ADCData from '~/types/ADCData'
 
 interface ServerToClientEvents {
     zmq_battery_voltage: (b: number) => void
     zmq_push_assist: (b: boolean) => void
     zmq_rfid: (b: string) => void
     zmq_imu: (b: IMUData) => void
+    zmq_adc: (b: ADCData) => void
 }
 
 interface ClientToServerEvents {

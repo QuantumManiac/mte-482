@@ -12,17 +12,21 @@ def adc(zmq: zmq.Context, i2c: busio.I2C):
     import adafruit_ads1x15.ads1115 as ADS
     from adafruit_ads1x15.analog_in import AnalogIn
     adc = ADS.ADS1115(i2c)
-
     chan0 = AnalogIn(adc, ADS.P0)
     chan1 = AnalogIn(adc, ADS.P1)
     chan2 = AnalogIn(adc, ADS.P2)
     chan3 = AnalogIn(adc, ADS.P2)
+    pub = setup_zmq_pub(zmq)
     
-
     while True:
-        print(f"[ADC] chan0 voltage: {chan0.voltage}, chan1 voltage: {chan1.voltage}, chan2 voltage: {chan2.voltage}, chan3 voltage: {chan3.voltage}")
+        # print(f"[ADC] chan0 voltage: {chan0.voltage}, chan1 voltage: {chan1.voltage}, chan2 voltage: {chan2.voltage}, chan3 voltage: {chan3.voltage}")
+        send_zmq_json(pub, "adc", {
+            "channel0": chan0.voltage,
+            "channnl1": chan1.voltage,
+            "channel2": chan2.voltage,
+            "channel3": chan3.voltage
+        })
         sleep(0.1)
-    # pub = setup_zmq_pub(zmq)
 
 def rfid(zmq: zmq.Context, i2c: busio.I2C):
     from adafruit_pn532.i2c import PN532_I2C
