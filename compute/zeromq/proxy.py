@@ -4,6 +4,7 @@ import threading
 import time
 import eventlet
 import json
+import serial
 
 # Thread for proxying messages between publisher and subscriber
 def zmq_server(context: zmq.Context):
@@ -55,6 +56,24 @@ def zmq_to_sio(context: zmq.Context):
 
             sio.emit('zmq_message', {'topic': topic, 'msg': msg})
 
+def zmq_to_serial(context: zmq.Context, uart_port: str):
+    sub: zmq.Socket = context.socket(zmq.SUB)
+    sub.setsockopt(zmq.CONFLATE, 1)
+    sub.connect("tcp://127.0.0.1:5555")
+    sub.setsockopt(zmq.SUBSCRIBE, b"adc")
+
+    uart = serial.Serial(uart_port, 9600)
+
+    while True:
+        topic, msg = sub.recv_string().split(' ', 1)
+
+        try :
+            msg: dict = json.loads(msg)
+            uart.write(json.dumps(msg).encode('utf-8') + b'\n')
+        except ValueError:
+            pass
+
+
 if __name__ == '__main__':
     zmq_ctx = zmq.Context()
     sio_srv = socketio.Server(cors_allowed_origins='*')
@@ -62,6 +81,8 @@ if __name__ == '__main__':
     sio_thread = threading.Thread(target=sio_server, args=(sio_srv, zmq_ctx))
     zmq_thread = threading.Thread(target=zmq_server, args=(zmq_ctx,))
     relay_thread = threading.Thread(target=zmq_to_sio, args=(zmq_ctx,))
+    uart_thread = threading.Thread(target=zmq_to_serial, args=(zmq_ctx, "/dev/ttyS0"))
+
     zmq_thread.start()
     sio_thread.start()
     relay_thread.start()

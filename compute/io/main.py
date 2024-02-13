@@ -100,13 +100,13 @@ def main():
     ctx = zmq.Context()
     i2c = I2C(3)
 
-    # adc_thread = threading.Thread(target=adc, args=(ctx, i2c))
+    adc_thread = threading.Thread(target=adc, args=(ctx, i2c))
     rfid_thread = threading.Thread(target=rfid, args=(ctx, i2c))
     pushbutton_thread = threading.Thread(target=pushbutton, args=(ctx,))
     imu_thread = threading.Thread(target=imu, args=(ctx, i2c))
     voltage_thread = threading.Thread(target=voltage, args=(ctx,))
 
-    # adc_thread.start()
+    adc_thread.start()
     rfid_thread.start()
     pushbutton_thread.start()
     imu_thread.start()
