@@ -43,7 +43,7 @@ export default function BatteryIndicator({value}: BatteryIndicatorProps) {
                 }
             )
         }>
-            <h1>Battery: {value ? value : "???"} V</h1>
+            <h1>Battery: {value != undefined ? value.toFixed(2) : "???"} V</h1>
         </div>
     )
 }
