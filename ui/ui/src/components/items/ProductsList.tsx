@@ -9,26 +9,30 @@ import ProductsListSearchBar from "./ProductsListSearchBar";
 interface ProductsListProps {
     products: Product[];
     handleAddToCart: (item: Product) => void;
+    addedToCart: Set<number>;
 }
 
-export default function ProductsList({ products, handleAddToCart }: ProductsListProps) {
+export default function ProductsList({ products, handleAddToCart, addedToCart }: ProductsListProps) {
     const [search, setSearch] = useState("");
     const [filteredProducts, setFilteredProducts] = useState<Product[]>(products);
 
+
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearch(e.target.value);
-        setFilteredProducts(
-            products.filter((product) => product.name.toLowerCase().includes(e.target.value.toLowerCase())
-            )
-        );
+        const filteredProducts = products.filter((product) => product.name.toLowerCase().includes(e.target.value.toLowerCase()))
+        setFilteredProducts(filteredProducts)
     };
 
+    const handleAddToCartAndSetState = (item: Product) => {
+        handleAddToCart(item);
+    }
+
     return (
-        <div className="flex-1 border-r-2 border-black">
+        <div className="flex-1 border-r-2 border-black flex flex-col">
             <ProductsListSearchBar handleSearch={handleSearch} search={search} />
-            <div className="overflow-y-scroll">
+            <div className="overflow-y-scroll flex-1">
                 {filteredProducts.map((product: Product) => (
-                    <ProductListItem key={product.id} handleAddToCart={handleAddToCart} product={product}/>
+                    <ProductListItem key={product.id} handleAddToCart={handleAddToCartAndSetState} product={product} addedToCart={addedToCart.has(product.id)}/>
                 ))}
             </div>
         </div>

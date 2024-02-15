@@ -1,8 +1,15 @@
 import ScanListener from "~/components/scan/ScanListener";
+import { db } from "~/server/db";
 
 export default async function Page() {
+
+
   return (
-    <main>
+    <main className="flex flex-col h-screen justify-center items-center">
+      
+      <h1
+        className="text-4xl animate-pulse"
+      >Waiting for Item to be Scanned...</h1>
       <ScanListener/>
     </main>
   );

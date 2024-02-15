@@ -13,22 +13,41 @@ interface ItemListContainerProps {
 }
 
 export default function ItemListContainer({ allItems, handleRemoveFromCart, handleAddToCart }: ItemListContainerProps) {
-    const [shoppingCartItems, setShoppingCartItems] = useState<Product[]>(allItems.filter((item) => item.inCart));
+    const [addedToCart, setAddedToCart] = useState(() => {
+        const addedToCart = new Set<number>();
+        allItems.forEach((product) => {
+            if (product.inCart) {
+                addedToCart.add(product.id);
+            }
+        });
+
+        return addedToCart;
+    });
 
     const handleAddToCartAndSetState = (item: Product) => {
         handleAddToCart(item);
-        setShoppingCartItems((prevShoppingCartItems) => [...prevShoppingCartItems, item]);
+        setAddedToCart((prevAddedToCart) => {
+            const newAddedToCart = new Set(prevAddedToCart);
+            newAddedToCart.add(item.id);
+            return newAddedToCart;
+        }
+        )
     }
 
     const handleRemoveFromCartAndSetState = (id: number) => {
         handleRemoveFromCart(id);
-        setShoppingCartItems((prevShoppingCartItems) => prevShoppingCartItems.filter((item) => item.id !== id));
+        setAddedToCart((prevAddedToCart) => {
+            const newAddedToCart = new Set(prevAddedToCart);
+            newAddedToCart.delete(id);
+            return newAddedToCart;
+        }
+        );
     }
 
     return (
     <div className="flex flex-1 h-screen">
-      <ShoppingCartList shoppingCart={shoppingCartItems} handleRemoveFromCart={handleRemoveFromCartAndSetState} />
-      <ProductsList products={allItems} handleAddToCart={handleAddToCartAndSetState}/>
+      <ShoppingCartList products={allItems} addedToCart={addedToCart} handleRemoveFromCart={handleRemoveFromCartAndSetState} />
+      <ProductsList products={allItems} addedToCart={addedToCart} handleAddToCart={handleAddToCartAndSetState}/>
     </div>
     );
     }

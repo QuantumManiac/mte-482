@@ -1,7 +1,7 @@
 'use client';
 
 import NavLink from "./NavLink";
-import StatusBar from "./StatusBar";
+import StatusBar from "./statusBar/StatusBar";
 import { usePathname } from "next/navigation";
 
 // Navbar is on right of the page

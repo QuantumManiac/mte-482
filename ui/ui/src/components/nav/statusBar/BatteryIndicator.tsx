@@ -31,19 +31,19 @@ function getBatteryStatus(value: number | undefined): BatteryStatus {
 
 export default function BatteryIndicator({value}: BatteryIndicatorProps) {
     const batteryStatus = getBatteryStatus(value);
-
     return (
-        <div className={
+        <>
+            <h1 className={
             clsx(
-                "text-white border-white text-sm",
+                " border-white text-sm",
                 {
                     "font-bold text-red-500": batteryStatus === BatteryStatus.CRITICAL || batteryStatus === BatteryStatus.UNKNOWN,
                     "text-yellow-500": batteryStatus === BatteryStatus.LOW,
                     "text-green-500": batteryStatus
                 }
             )
-        }>
-            <h1>Battery: {value != undefined ? value.toFixed(2) : "???"} V</h1>
-        </div>
+        }
+            >Battery: {value != undefined ? `${value.toFixed(2)}V` : "???"}</h1>
+        </>
     )
 }

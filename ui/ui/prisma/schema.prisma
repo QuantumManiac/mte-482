@@ -21,4 +21,5 @@ model Product {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
     inCart      Boolean  @default(false)
+    rfid        String?
 }
