@@ -24,20 +24,20 @@ export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, h
 
     return (
         <div className={clsx(
-            "border flex flex-row",
+            "border-b-4 border-slate-500 flex flex-row",
             checked ? "bg-green-200" : "bg-slate-200"
         )}>
             
             <input className="scale-[2] mx-5" type="checkbox" checked={checked} onChange={handleCheckbox} />
-            <ProductImage product={cartItem} />
             <h3 className={clsx(
-                "grow text-xl pl-2",
+                "grow text-xl pl-2 text-balance",
                 checked && "line-through"
             )}>{cartItem.name}</h3>
-            <p>{cartItem.location}</p>
+            <div className="flex flex-row">
             <ActionButton style="bg-orange-300" icon="🗺️" text="Navigate" onClick={() => {console.log("Navigating to " + cartItem.location)}}/>
             <ActionButton style="bg-blue-300" icon="🔍" text="View" onClick={() => {window.location.href = `/items/${cartItem.id}`}}/>
             <ActionButton style="bg-red-300" icon="❌" text="Remove" onClick={() => handleRemoveFromCart(cartItem.id)}/>
+            </div>
         </div>
     );
 }

@@ -40,7 +40,7 @@ export default function ScanListener() {
 
     return (
         <div className="text-sm p-3">
-            {invalidRfid ? <h2 className="text-red-500 text-2xl">{`Invalid RFID: ${invalidRfid}`}</h2> : <h2 className="text-2xl">Please scan your item.</h2>}
+            {invalidRfid && invalidRfid != "00-00-00-00" ? <h2 className="text-red-500 text-2xl">{`Invalid RFID: ${invalidRfid}`}</h2> : <h2 className="text-2xl">Please scan your item.</h2>}
         </div>
     )
 }
