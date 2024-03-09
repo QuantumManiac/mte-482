@@ -11,8 +11,7 @@ interface  ShoppingCartListProps {
 }
 
 export default function ShoppingCartList({ products, handleRemoveFromCart, addedToCart, handleToggleDone}: ShoppingCartListProps) {
-    const [shoppingCart, setShoppingCart] = useState<Product[]>(products.filter((product) => product.inCart));
-    
+    const [shoppingCart, setShoppingCart] = useState<Product[]>(products.filter((product) => product.inCart)); 
     useEffect(() => {   
         setShoppingCart(products.filter((product) => addedToCart.has(product.id)));
     }

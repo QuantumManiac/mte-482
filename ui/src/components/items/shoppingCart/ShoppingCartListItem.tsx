@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { type Product } from "@prisma/client";
-import ProductImage from '../ProductImage';
+import ProductImage from '../productOverview/ProductImage';
 import ActionButton from "~/components/common/ActionButton";
 
 import clsx from "clsx";

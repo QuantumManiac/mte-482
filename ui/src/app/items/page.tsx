@@ -39,6 +39,6 @@ export default async function Page() {
   const allItems = await db.product.findMany();
 
   return (
-    <ItemListContainer allItems={allItems} handleAddToCart={handleAddToCart} handleRemoveFromCart={handleRemoveFromCart} handleToggleDone={handleToggleDone} />
+    <ItemListContainer initialItems={allItems} handleAddToCart={handleAddToCart} handleRemoveFromCart={handleRemoveFromCart} handleToggleDone={handleToggleDone} />
   );
 }
