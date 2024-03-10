@@ -6,7 +6,7 @@ import threading
 from time import sleep
 from adafruit_extended_bus import ExtendedI2C as I2C
 
-ZMQ_PUB = "tcp://192.168.0.114:5556"
+ZMQ_PUB = "tcp://192.168.137.10:5556"
 
 def adc(zmq: zmq.Context, i2c: busio.I2C):
     import adafruit_ads1x15.ads1115 as ADS

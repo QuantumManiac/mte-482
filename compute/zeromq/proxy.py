@@ -46,7 +46,7 @@ def zmq_to_sio(context: zmq.Context):
 
     sio = socketio.SimpleClient()
     time.sleep(1)
-    sio.connect('http://192.168.0.114:5557', wait_timeout=5, transports=['websocket'])
+    sio.connect('192.168.137.10:5557', wait_timeout=5, transports=['websocket'])
     with sio:
         while True:
             topic, msg = sub.recv_string().split(' ', 1)
