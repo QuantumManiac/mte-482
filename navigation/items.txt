@@ -1,0 +1,6 @@
+Grapes 7 6
+Cake 15 17
+BubbleTea 23 16
+Sushi 31 27
+Bagels 7 31
+Cheese 31 6
