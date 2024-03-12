@@ -1,6 +1,5 @@
 import { type Product } from "@prisma/client";
 import Image from 'next/image'
-import { env } from "~/env";
 
 interface ProductImageProps {
     product: Product
@@ -8,8 +7,8 @@ interface ProductImageProps {
 
 export default function ProductImage({ product }: ProductImageProps) {
     return (
-        <div>
-            <Image src={`/img/products/${product.image ?? "no-image.jpg"}`} alt={product.name} width={100} height={100} />
+        <div className="h-full w-full relative">
+            <Image src={`/img/products/${product.image ?? "no-image.jpg"}`} alt={product.name} layout="fill" objectFit="contain" />
         </div>
     );
 }

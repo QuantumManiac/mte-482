@@ -34,9 +34,9 @@ export default function ProductOverviewActions(
     } else {
         return (
             <div className="flex flex-row">
-                <ActionButton icon="🔙" text="Back" onClick={() => router.back()}/>
-                {inCart ? <ActionButton style="bg-red-300" icon="❌" text="Remove from Cart" onClick={() => handleCartModifyAndState(item)}/> : <ActionButton style="bg-green-300" icon="➕" text="Add to Cart" onClick={() => handleCartModifyAndState(item)}/>}
-                <ActionButton style="bg-blue-300" icon="🗺️" text="Navigate To"/>
+                <ActionButton style="bg-yellow-300 flex-1" icon="🔙" text="Back" onClick={() => router.back()}/>
+                {inCart ? <ActionButton style="bg-red-300 flex-1" icon="❌" text="Remove from Cart" onClick={() => handleCartModifyAndState(item)}/> : <ActionButton style="bg-green-300 flex-1" icon="➕" text="Add to Cart" onClick={() => handleCartModifyAndState(item)}/>}
+                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To"/>
             </div>
         )
     }

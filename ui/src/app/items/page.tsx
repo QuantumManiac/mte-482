@@ -2,7 +2,12 @@ import { type Product } from "@prisma/client";
 import ItemListContainer from "~/components/items/ItemListContainer";
 import { db } from "~/server/db";
 
+import { revalidatePath } from 'next/cache';
+
+import { unstable_noStore as noStore } from 'next/cache';
+
 export default async function Page() {
+  noStore();
   async function handleAddToCart(item: Product): Promise<void> {
     'use server'
     const id = item.id;
@@ -13,6 +18,7 @@ export default async function Page() {
         done: false
       },
     });
+    revalidatePath('/');
   };
 
   async function handleRemoveFromCart(id: number): Promise<void> {
@@ -24,6 +30,7 @@ export default async function Page() {
         done: false,
       },
     });
+    revalidatePath('/(main)');
   };
 
   async function handleToggleDone(product: Product): Promise<void> {
@@ -34,6 +41,7 @@ export default async function Page() {
         done: !product.done,
       },
     });
+    revalidatePath('/(main)');
   }
   
   const allItems = await db.product.findMany();

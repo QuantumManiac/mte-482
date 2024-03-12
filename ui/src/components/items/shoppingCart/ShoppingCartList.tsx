@@ -20,7 +20,7 @@ export default function ShoppingCartList({ products, handleRemoveFromCart, added
 
     return (
         <div className="flex-1 flex flex-col bg-slate-100">
-            <div className="text-2xl border-b-2 bg-slate-300 border-black text-center">
+            <div className="text-2xl border-b-2 bg-slate-200 border-black text-center">
                 <h1>Shopping Cart</h1>
             </div>
             <div className="overflow-y-scroll flex-1">

@@ -7,8 +7,17 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
     images: {
-        domains: ["192.168.0.114", "192.168.137.10"],
-    },
+        remotePatterns: [{
+            hostname: "192.168.0.114" 
+        },
+        {
+            hostname: "localhost"
+        },
+        {
+            hostname: "192.168.137.10"
+        }
+        ],
+    }
 };
 
 export default config;

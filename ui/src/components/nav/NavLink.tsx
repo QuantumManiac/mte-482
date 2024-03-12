@@ -20,7 +20,9 @@ export default function NavLink({name, path}: NavLinkProps) {
                 "bg-gray-600": pathName !== path,
               }
             )
-        }>
+        }
+        prefetch={false}
+        >
           
             <h1 className="text-center text-white font-bold text-lg p-5">{name}</h1>
     </Link>
