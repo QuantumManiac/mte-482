@@ -1,0 +1,4 @@
+greenlet==3.0.3
+pyzmq==25.1.2
+SQLAlchemy==2.0.28
+typing_extensions==4.10.0
