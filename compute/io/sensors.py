@@ -79,8 +79,9 @@ def voltage(zmq: zmq.Context):
     ina.configure(bus_ct=INA226.VCT_1100us_BIT)
     pub = setup_zmq_pub(zmq)
     while True:
-        # print("[VOLTAGE] Bus Voltage: %0.6f" % (ina.voltage() * 0.95))
-        send_zmq_msg(pub, "battery_voltage", str(ina.voltage() * 0.95))
+        if ina.is_conversion_ready():
+            print("[VOLTAGE] Bus Voltage: %0.6f" % (ina.voltage()))
+            send_zmq_msg(pub, "battery_voltage", str(ina.voltage()))
         sleep(0.1)
     
 
