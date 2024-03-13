@@ -74,14 +74,16 @@ def imu(zmq: zmq.Context, i2c: busio.I2C):
         sleep(0.1)
 
 def voltage(zmq: zmq.Context):
+    VOLTAGE_MULTIPLIER = 0.95
     from ina226 import INA226
     ina = INA226(busnum=3)
     ina.configure(bus_ct=INA226.VCT_1100us_BIT)
     pub = setup_zmq_pub(zmq)
     while True:
         if ina.is_conversion_ready():
-            print("[VOLTAGE] Bus Voltage: %0.6f" % (ina.voltage()))
-            send_zmq_msg(pub, "battery_voltage", str(ina.voltage()))
+            voltage = ina.voltage()
+            print("[VOLTAGE] Bus Voltage: %0.6f" % (voltage))
+            send_zmq_msg(pub, "battery_voltage", str(voltage))
         sleep(0.1)
     
 
