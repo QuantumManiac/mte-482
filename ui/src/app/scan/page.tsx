@@ -1,5 +1,4 @@
 import ScanListener from "~/components/scan/ScanListener";
-import { db } from "~/server/db";
 
 export default async function Page() {
 

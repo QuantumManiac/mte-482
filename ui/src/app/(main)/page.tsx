@@ -1,6 +1,7 @@
 import DashboardShoppingCartList from "~/components/dashboard/DashboardShoppingCartList";
+import DashboardNavigationContainer from "~/components/dashboard/DashboardNavigationContainer";
 
-import type { Product } from "@prisma/client";
+import type { Product, NavigationState } from "@prisma/client";
 
 import { db } from "~/server/db";
 
@@ -15,6 +16,8 @@ export default async function Home() {
             inCart: true,
         },
     });
+
+    const navigationState = await db.navigationState.findFirst();
 
     async function handleRemoveFromCart(id: number): Promise<void> {
         'use server'
@@ -39,13 +42,18 @@ export default async function Home() {
         revalidatePath('/items');
     }
 
+    async function getNavigationState(): Promise<NavigationState | null> {
+        'use server'
+        return await db.navigationState.findFirst();
+    }
+
     return (
       <div className="flex space-x-1 bg-slate-300">
-        <div className="flex-1 h-screen bg-red-100">
+        <div className="flex-1 h-screen">
                 <DashboardShoppingCartList initialShoppingCart={shoppingCart} handleRemoveFromCart={handleRemoveFromCart} handleToggleDone={handleToggleDone} />
         </div>
-        <div className="flex-1 h-screen bg-green-100">
-          Map
+        <div className="flex-1 h-screen">
+                <DashboardNavigationContainer initialNavigationState={navigationState} getNavigationState={getNavigationState} />
         </div>
       </div>
     );

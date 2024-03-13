@@ -32,10 +32,10 @@ export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, h
                     checked && "line-through"
                 )}>
                 <h3 className={"text-xl text-balance"}>{cartItem.name}</h3>
-                <p className="text">{cartItem.location}</p>
+                <p className="text">{cartItem.locationText}</p>
             </div>
             <div className="flex flex-row">
-                <ActionButton style="bg-orange-300" icon="🗺️" text="Navigate" onClick={() => {console.log("Navigating to " + cartItem.location)}}/>
+                <ActionButton style="bg-orange-300" icon="🗺️" text="Navigate" onClick={() => {console.log("Navigating to " + cartItem.locationText)}}/>
                 <ActionButton style="bg-blue-300" icon="🔍" text="View" onClick={() => {window.location.href = `/items/${cartItem.id}`}}/>
                 <ActionButton style="bg-red-300" icon="❌" text="Remove" onClick={() => handleRemoveFromCart(cartItem.id)}/>
             </div>

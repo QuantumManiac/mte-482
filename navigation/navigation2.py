@@ -38,6 +38,7 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
         state.state = NavState.NAVIGATING
         # state.nextStep = 'left'
         # state.distToNextStep = 5
+        # state.desiredHeading = 180
         # state.route = ...
 
     pub.send_string(f'zmq_navigation {NavMessages.START_NAV.value}')
@@ -53,6 +54,7 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
         # TODO Update State
         # state.nextStep = 'left'
         # state.distToNextStep = 5
+        # state.desiredHeading = 5
         # Also change the route if recalculated
         # state.route = ...
         pass
