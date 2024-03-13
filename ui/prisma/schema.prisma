@@ -14,7 +14,9 @@ model Product {
     id          Int      @id @default(autoincrement())
     name        String
     price       Float
-    location    String
+    locationText    String?
+    locationX   Float?
+    locationY   Float?
     description String
     additionalInfo String?
     image       String?
@@ -23,4 +25,16 @@ model Product {
     inCart      Boolean  @default(false)
     done        Boolean  @default(false)
     rfid        String?
+}
+
+model NavigationState {
+    id             Int     @id @default(0)
+    state          String  @default("idle")
+    routeTo        String?
+    route          String?
+    nextStep       String?
+    distToNextStep Float?
+    currentX       Float   @default(0)
+    currentY       Float   @default(0)
+    heading        Float   @default(0)
 }

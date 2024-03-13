@@ -8,7 +8,7 @@ const products = [
   {
     name: 'Grapes',
     price: 3.99,
-    location: 'Produce Section',
+    locationText: 'Produce Section',
     description: 'Fresh and juicy green grapes, perfect for snacking or adding to a fruit salad.',
     additionalInfo: 'Grapes are a great source of vitamins C and K.',
     image: null,
@@ -19,7 +19,7 @@ const products = [
   {
     name: 'Whole Wheat Bread',
     price: 2.49,
-    location: 'Bakery Aisle',
+    locationText: 'Bakery Aisle',
     description: 'Hearty whole wheat bread, sliced and ready for your favorite sandwiches.',
     additionalInfo: 'Ingredients include whole wheat flour, water, yeast, and salt.',
     image: null,
@@ -30,7 +30,7 @@ const products = [
   {
     name: 'Laptop',
     price: 1249.99,
-    location: 'Electronics Section',
+    locationText: 'Electronics Section',
     description: 'High-performance laptop with a 15-inch display, perfect for work and entertainment.',
     additionalInfo: 'Specs: Intel Core i7, 16GB RAM, 512GB SSD, NVIDIA GTX 1650.',
     image: null,
@@ -41,7 +41,7 @@ const products = [
   {
     name: 'Organic Bananas',
     price: 0.59,
-    location: 'Produce Section',
+    locationText: 'Produce Section',
     description: 'Ripe organic bananas, ideal for baking or as a healthy snack.',
     additionalInfo: 'Bananas are rich in potassium and fiber.',
     image: null,
@@ -52,7 +52,7 @@ const products = [
   {
     name: 'LED Light Bulbs',
     price: 7.99,
-    location: 'Home Improvement Aisle',
+    locationText: 'Home Improvement Aisle',
     description: 'Energy-saving LED light bulbs with a lifespan of over 10,000 hours.',
     additionalInfo: '60W equivalent, non-dimmable, A19 E26 standard base.',
     image: null,
@@ -63,7 +63,7 @@ const products = [
   {
     name: 'Ground Coffee',
     price: 8.99,
-    location: 'Coffee Aisle',
+    locationText: 'Coffee Aisle',
     description: 'Rich and full-bodied ground coffee, perfect for starting your day.',
     additionalInfo: '100% Arabica beans, medium roast.',
     image: null,
@@ -74,7 +74,7 @@ const products = [
   {
     name: 'Sparkling Water',
     price: 0.99,
-    location: 'Beverages Aisle',
+    locationText: 'Beverages Aisle',
     description: 'Refreshing and bubbly sparkling water, with no added sugars or artificial flavors.',
     additionalInfo: 'Ingredients: Carbonated water.',
     image: null,
@@ -85,7 +85,7 @@ const products = [
   {
     name: 'Almonds',
     price: 5.49,
-    location: 'Snack Aisle',
+    locationText: 'Snack Aisle',
     description: 'Crunchy and nutritious almonds, a perfect healthy snack.',
     additionalInfo: 'Almonds are a good source of protein, fiber, and healthy fats.',
     image: null,
@@ -96,7 +96,7 @@ const products = [
   {
     name: 'Toothpaste',
     price: 3.99,
-    location: 'Personal Care Aisle',
+    locationText: 'Personal Care Aisle',
     description: 'Fluoride toothpaste for strong and healthy teeth, with a fresh mint flavor.',
     additionalInfo: 'Helps prevent cavities, gingivitis, and plaque.',
     image: null,
@@ -107,7 +107,7 @@ const products = [
   {
     name: 'Chicken Breasts',
     price: 9.99,
-    location: 'Meat Section',
+    locationText: 'Meat Section',
     description: 'Lean and tender chicken breasts, perfect for grilling or baking.',
     additionalInfo: 'Pack contains 4 chicken breasts, approximately 1.5 lbs.',
     image: null,
@@ -118,7 +118,7 @@ const products = [
   {
     name: 'Tomato Sauce',
     price: 1.99,
-    location: 'Pasta Aisle',
+    locationText: 'Pasta Aisle',
     description: 'Rich and flavorful tomato sauce, made with ripe tomatoes and a blend of herbs.',
     additionalInfo: 'Ingredients: Tomato, water, salt, onion, garlic, basil, oregano.',
     image: null,
@@ -129,7 +129,7 @@ const products = [
   {
     name: 'Cheddar Cheese',
     price: 4.50,
-    location: 'Dairy Aisle',
+    locationText: 'Dairy Aisle',
     description: 'Sharp and creamy cheddar cheese, perfect for sandwiches and cheese platters.',
     additionalInfo: 'Made from 100% cow’s milk.',
     image: null,
@@ -140,7 +140,7 @@ const products = [
   {
     name: 'Multivitamin Gummies',
     price: 12.99,
-    location: 'Health Supplements Aisle',
+    locationText: 'Health Supplements Aisle',
     description: 'Tasty multivitamin gummies for daily health and wellness support.',
     additionalInfo: 'Contains vitamins A, C, D, E, and Zinc.',
     image: null,
@@ -151,7 +151,7 @@ const products = [
   {
     name: 'Yogurt',
     price: 0.99,
-    location: 'Dairy Aisle',
+    locationText: 'Dairy Aisle',
     description: 'Creamy and delicious yogurt, with live cultures for digestive health.',
     additionalInfo: 'Ingredients: Milk, live yogurt cultures.',
     image: null,
@@ -162,7 +162,7 @@ const products = [
   {
     name: 'Olive Oil',
     price: 10.99,
-    location: 'Cooking Oils Aisle',
+    locationText: 'Cooking Oils Aisle',
     description: 'Extra virgin olive oil, perfect for dressings and cooking.',
     additionalInfo: 'Cold-pressed, 100% pure olive oil.',
     image: null,
@@ -173,7 +173,7 @@ const products = [
   {
     name: 'Paper Towels',
     price: 8.99,
-    location: 'Household Supplies Aisle',
+    locationText: 'Household Supplies Aisle',
     description: 'Super absorbent paper towels, ideal for quick cleanups and spills.',
     additionalInfo: 'Pack contains 6 rolls, each with 120 2-ply sheets.',
     image: null,
@@ -184,7 +184,7 @@ const products = [
   {
     name: 'Ice Cream',
     price: 4.99,
-    location: 'Frozen Foods Aisle',
+    locationText: 'Frozen Foods Aisle',
     description: 'Rich and creamy ice cream, available in a variety of flavors.',
     additionalInfo: 'Flavors: Vanilla, Chocolate, Strawberry, Mint Chocolate Chip.',
     image: null,
@@ -195,7 +195,7 @@ const products = [
   {
     name: 'Socks',
     price: 9.99,
-    location: 'Clothing Section',
+    locationText: 'Clothing Section',
     description: 'Comfortable and durable socks, perfect for everyday wear.',
     additionalInfo: 'Pack includes 5 pairs of assorted colors.',
     image: null,
@@ -206,7 +206,7 @@ const products = [
   {
     name: 'Shampoo',
     price: 5.99,
-    location: 'Personal Care Aisle',
+    locationText: 'Personal Care Aisle',
     description: 'Nourishing shampoo for healthy and shiny hair, suitable for all hair types.',
     additionalInfo: 'Contains natural ingredients like aloe vera and coconut oil.',
     image: null,
@@ -217,7 +217,7 @@ const products = [
   {
     name: 'Coffee Maker',
     price: 79.99,
-    location: 'Electronics Section',
+    locationText: 'Electronics Section',
     description: 'Convenient and easy-to-use coffee maker, perfect for brewing your morning cup.',
     additionalInfo: 'Features include programmable settings, a pause-and-serve function, and a 12-cup capacity.',
     image: null,
