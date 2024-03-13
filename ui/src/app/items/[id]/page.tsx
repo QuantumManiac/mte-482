@@ -47,14 +47,14 @@ export default async function Page({params} : {params: {id: string}}) {
                         <div className='bg-white flex-1 '>
                             <ProductImage product={item}/>
                         </div>
-                        <div className='bg-white flex-1 px-2'>
+                        <div className='bg-slate-100 flex-1 px-2'>
                             <ProductDetails product={item}/>
                         </div>
                     </div>
-                    <div className='bg-yellow-200 flex-1'>
+                    <div className=' bg-slate-100 flex-1'>
                         <ProductDescription product={item}/>
                     </div>
-                    <div className='bg-green-200 flex-1'>
+                    <div className='bg-slate-100 flex-1'>
                         <ProductAdditionalInfo product={item}/>
                     </div>
                 </div>
