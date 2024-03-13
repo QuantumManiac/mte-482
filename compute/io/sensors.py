@@ -82,8 +82,8 @@ def voltage(zmq: zmq.Context):
     while True:
         if ina.is_conversion_ready():
             voltage = ina.voltage()
-            print("[VOLTAGE] Bus Voltage: %0.6f" % (voltage))
-            send_zmq_msg(pub, "battery_voltage", str(voltage))
+            print("[VOLTAGE] Bus Voltage: %0.6f" % (voltage * VOLTAGE_MULTIPLIER))
+            send_zmq_msg(pub, "battery_voltage", str(voltage * VOLTAGE_MULTIPLIER))
         sleep(0.1)
     
 
