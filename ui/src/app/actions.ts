@@ -18,20 +18,20 @@ export async function getIdFromRfid(rfid: string): Promise<number | undefined> {
 export async function cancelRoute(): Promise<void> {
   "use server";
   await db.navigationState.update({
-    where: { id: 1 },
+    where: { id: 0 },
     data: {
       state: NavState.PENDING_CANCEL,
     },
   });
 }
 
-export async function startRoute(routeTo: string): Promise<void> {
+export async function startRoute(routeTo: number): Promise<void> {
   "use server";
   await db.navigationState.update({
-    where: { id: 1 },
+    where: { id: 0 },
     data: {
       state: NavState.START_NAV,
-      route: routeTo,
+      routeTo: routeTo.toString(),
     },
   });
 }

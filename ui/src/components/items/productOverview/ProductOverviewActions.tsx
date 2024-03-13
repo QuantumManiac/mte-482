@@ -3,10 +3,9 @@
 import {type Product} from '@prisma/client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { startRoute } from '~/app/actions'
 
 import ActionButton from '~/components/common/ActionButton'
-
-
 
 interface ProductOverviewActionsProps {
     item?: Product;
@@ -36,9 +35,8 @@ export default function ProductOverviewActions(
             <div className="flex flex-row">
                 <ActionButton style="bg-yellow-300 flex-1" icon="🔙" text="Back" onClick={() => router.back()}/>
                 {inCart ? <ActionButton style="bg-red-300 flex-1" icon="❌" text="Remove from Cart" onClick={() => handleCartModifyAndState(item)}/> : <ActionButton style="bg-green-300 flex-1" icon="➕" text="Add to Cart" onClick={() => handleCartModifyAndState(item)}/>}
-                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To"/>
+                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To" onClick={() => startRoute(item.id)}/>
             </div>
         )
     }
-
 }

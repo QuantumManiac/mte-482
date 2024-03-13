@@ -38,5 +38,5 @@ model NavigationState {
     currentX       Float   @default(0)
     currentY       Float   @default(0)
     heading        Float   @default(0)
-
+    destinationName String?
 }

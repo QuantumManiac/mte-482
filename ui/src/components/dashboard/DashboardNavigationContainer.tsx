@@ -6,6 +6,8 @@ import { io, type Socket } from "socket.io-client";
 import { env } from "~/env"
 import { type NavMessages, NavState } from "~/types/Navigation";
 
+import { cancelRoute } from "~/app/actions";
+
 import DashboardNavigation from "./DashboardNavigation";
 
 
@@ -39,10 +41,21 @@ export default function DashboardNavigationContainer({ initialNavigationState, g
     }, [getNavigationState]);
     
     const [navigationState, setNavigationState] = useState<NavigationState | null>(initialNavigationState);
+
+    function handleCancelRoute() {
+        setNavigationState((prev) => {
+            if (prev) {
+                void cancelRoute();
+                return {...prev, state: NavState.PENDING_CANCEL};
+            }
+            return null;
+        })
+    }
+
     switch (navigationState ? navigationState.state : null as NavState | null) {
         case NavState.IDLE:
             return (
-                <div className="flex flex-col items-center justify-center h-full bg-slate-100">
+                <div className="flex flex-col items-center justify-center h-full bg-slate-200">
                     <p className="text-2xl font-bold text-slate-600">Currently Not Navigating</p>
                 </div>
             )
@@ -60,13 +73,13 @@ export default function DashboardNavigationContainer({ initialNavigationState, g
             )
         case NavState.NAVIGATING:
             return (
-                <div className="flex flex-col items-center justify-center h-full bg-slate-100">
-                    <DashboardNavigation navigationState={navigationState!} />
+                <div className="flex flex-col items-center justify-center h-full bg-slate-300">
+                    <DashboardNavigation navigationState={navigationState!} handleCancelRoute={handleCancelRoute}/>
                 </div>
             )
         default:
             return (
-                <div className="flex flex-col items-center justify-center h-full bg-slate-100">
+                <div className="flex flex-col items-center justify-center h-full bg-slate-200">
                     <p className="text-2xl font-bold animate-pulse text-slate-600">Loading...</p>
                 </div>
             )
