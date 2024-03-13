@@ -9,8 +9,6 @@ import { type NavMessages, NavState } from "~/types/Navigation";
 import { cancelRoute } from "~/app/actions";
 
 import DashboardNavigation from "./DashboardNavigation";
-import { revalidatePath } from "next/cache";
-
 
 interface DashboardNavigationContainerProps {
     initialNavigationState: NavigationState | null;

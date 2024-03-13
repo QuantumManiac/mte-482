@@ -5,7 +5,6 @@ import ProductsList from "./productList/ProductsList";
 import ShoppingCartList from "./shoppingCart/ShoppingCartList";
 
 import { useState } from "react";
-import { set } from "zod";
 
 interface ItemListContainerProps {
     initialItems: Product[];

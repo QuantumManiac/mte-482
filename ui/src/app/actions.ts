@@ -1,6 +1,5 @@
 "use server";
 
-import { Product } from "@prisma/client";
 import { db } from "~/server/db";
 
 import { NavState } from "~/types/Navigation";

@@ -15,7 +15,7 @@ export default function DashboardNavigation({navigationState, handleCancelRoute}
     <div className="flex flex-col h-full w-full space-y-1">
         <div className="flex items-center bg-slate-100">
             <div className="text-2xl flex-1 px-2">
-                To: {navigationState.destinationName}
+                To: {navigationState.destName}
             </div>
             <ActionButton style="bg-red-200" text="Cancel" icon="❌" onClick={() => handleCancelRoute()} />
         </div>
