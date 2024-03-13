@@ -22,11 +22,14 @@ class NavMessages(enum.Enum):
 
 # Update the current position of the cart to the database
 def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
-    _, msg = zmq_sub.recv_string().split(' ', 1)
-    x, y, heading = msg.split(',')
-    with session.begin():
-        session.query(NavigationState).filter(NavigationState.id == 0).update({NavigationState.currentX: x, NavigationState.currentY: y, NavigationState.heading: heading})
-            
+    try:
+        _, msg = zmq_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
+        x, y, heading = msg.split(',')
+        with session.begin():
+            session.query(NavigationState).filter(NavigationState.id == 0).update({NavigationState.currentX: x, NavigationState.currentY: y, NavigationState.heading: heading})
+    except zmq.error.ZMQError:
+        pass     
+    
 def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     # TODO Calculate route based on current position and destination
     # Get the destination from the database
