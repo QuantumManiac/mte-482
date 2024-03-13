@@ -30,7 +30,9 @@ model Product {
 model NavigationState {
     id             Int     @id @default(0)
     state          String  @default("idle")
-    routeTo        String?
+    destX       Float?
+    destY       Float?
+    destName String?
     route          String?
     nextStep       String?
     distToNextStep Float?
@@ -38,5 +40,4 @@ model NavigationState {
     currentX       Float   @default(0)
     currentY       Float   @default(0)
     heading        Float   @default(0)
-    destinationName String?
 }
