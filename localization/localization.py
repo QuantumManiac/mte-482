@@ -91,7 +91,7 @@ class Localization:
 
             prev_time = time.time() 
 
-    def calculate_imu_heading(dqw, dqx, dqy, dqz):
+    def calculate_imu_heading(self, dqw, dqx, dqy, dqz):
         # https://github.com/adafruit/Adafruit_CircuitPython_BNO08x/blob/main/examples/bno08x_find_heading.py
         norm = math.sqrt(dqw * dqw + dqx * dqx + dqy * dqy + dqz * dqz)
         dqw = dqw / norm
