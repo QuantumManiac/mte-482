@@ -6,8 +6,8 @@ from time import sleep
 import os
 import zmq
 
-ZMQ_PUB = "tcp://192.168.137.10:5556"
-ZMQ_SUB = "tcp://192.168.137.10:5555"
+ZMQ_PUB = "tcp://172.20.10.4:5556"
+ZMQ_SUB = "tcp://172.20.10.4:5555"
 TICK_RATE = 3  # Hz
 
 def handle_critical():

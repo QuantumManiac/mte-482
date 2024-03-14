@@ -1,14 +1,18 @@
 cd compute/io/ 
+source venv/bin/activate
 pip install -r requirements.txt
+deactivate
 
 cd ../..
 
-cd navigation/qr
+source venv/bin/activate
 pip install -r requirements.txt
+deactivate
 
 cd ..
 
-cd power/power_management
+source venv/bin/activate
 pip install -r requirements.txt
+deactivate
 
 cd ../..
