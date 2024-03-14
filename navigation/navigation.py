@@ -2,7 +2,6 @@ import pygame
 import math
 from queue import PriorityQueue
 
-file_path = 'C:/UW/4B/MTE482/items.txt'
 file_found = 'C:/UW/4B/MTE482/path.txt'
 create_path = 'C:/UW/4B/MTE482/path_created.txt'
 
@@ -14,16 +13,6 @@ product_location = []
 location_of_cart = []
 
 ROWS = 40
-
-with open(file_path, 'r') as file:
-	for line in file:
-		values = line.strip().split()
-
-		if len(values) >= 3:
-			item_name.append(values[0])
-			temp = [(values[1]), (values[2])]
-			item_location.append(temp)
-    # data = file.read()
 
 print(item_location)
 # text = data.split('\n')
@@ -122,11 +111,6 @@ class Spot:
 	def __lt__(self, other):
 		return False
 
-def receive_info(product_info, location_info):
-	product_name = product_info[0]
-	item_name.append(values[0])
-	temp = [(values[1]), (values[2])]
-	item_location.append(temp)
 
 def h(p1, p2):
 	x1, y1 = p1
@@ -155,7 +139,8 @@ def create_string(prev_spot, curr_spot, next_spot):
     directions = f"Straight until: ({curr_spot.row}, {curr_spot.col}), Turn: {dir}"
     # curr_str = f"Next: ({prev_spot.row}, {prev_spot.col}), Curr: ({curr_spot.row}, {curr_spot.col}), Prev: ({next_spot.row}, {next_spot.col}), ({dir})"
     # print(curr_str)
-    return directions, turned
+    return curr_spot, directions, dir, turned
+
 
 def print_path(came_from, next_points, current):
 	path_str = ""
@@ -176,21 +161,29 @@ def print_path(came_from, next_points, current):
 			except:
 				print("end")
 			if count == 0:
-					arrival = f"({current.row}, {current.col}) Arrived!"
-					path_str.append(arrival)
+					arrived = f"({current.row}, {current.col}) Arrived!"
+					arrival = [(current.row), (current.col)]
+					path.append(arrival)
+					path_str = arrived
+					turn_dir.append("Arrived!")
 
 			current.make_path()
 			if count >= 1 and count < max:
-				temp, turned = create_string(prev_spot, current, next_spot)
-				print(temp)
+				temp, temp_str, dir, turned = create_string(prev_spot, current, next_spot)
+				print(temp.row)
+				print(temp.col)
 				# file.write(temp)
 				if turned:
-					path_str.insert(0, temp)
+					temp_arr = [(temp.row), (temp.col)]
+					path_str = temp_str + path_str
+					path.insert(0, temp)
+					turn_dir.insert(0, dir)
 			count += 1
 			# formatted = temp
-		for i in range(len(path_str)):
-			format_str = f"{path_str[i]} \n"
-			file.write(format_str)
+		# for i in range(len(path_str)):
+		# 	format_str = f"{path_str[i]} \n"
+		# 	file.write(format_str)
+		return path_str, path, dir
 
 def draw_grid(win, rows, width):
 	gap = width // rows
@@ -220,10 +213,6 @@ def get_clicked_pos(pos, rows, width):
 
 	return row, col
 
-def plot_items(grid):
-	for i in range(len(item_name)):
-		spot = grid[int(item_location[i][0])][int(item_location[i][1])]
-		spot.make_item()
 
 def make_set_barrier(grid):
 	num_shelves_x = 4
@@ -271,6 +260,8 @@ def algorithm(grid, start, end):
 	g_score[start] = 0
 	f_score = {spot: float("inf") for row in grid for spot in row} # keeps track of the predicted distance from this node to the end node
 	f_score[start] = h(start.get_pos(), end.get_pos()) # initial is the heuristic from start to end
+	path = []
+	path_str = []
 
 	open_set_hash = {start} #help to see what is in the open set
 
@@ -287,9 +278,10 @@ def algorithm(grid, start, end):
 			next_points = came_from.copy()
 			next_points.popitem()
 			reconstruct_path(came_from, end, draw)
-			print_path(came_from, next_points, end)
+			path_str, path, dir = print_path(came_from, next_points, end)
 			end.make_end()
-			return True
+			print("ended")
+			return True, path, path_str, dir
 
 		for neighbor in current.neighbors: 
 			temp_g_score = g_score[current] + 1
@@ -306,69 +298,11 @@ def algorithm(grid, start, end):
 					open_set_hash.add(neighbor)
 					neighbor.make_open()
 
-		#draw()
-
+		
 		if current != start:
 			current.make_closed()
 
-	return False
-
-# need to keep track of when the cart was on track last though
-# keep track of when this was true last?
-def on_track(position, last_spot, item_location):
-    ROWS = 40
-    returned = False
-    if pythagorean(position, last_spot) > 6:
-        grid = make_grid(ROWS, WIDTH)
-        make_set_barrier(grid)
-        plot_items(grid)
-        returned = algorithm(grid, position, item_location)
-    return returned
-
-# OR INSTEAD OF THIS USE ABOVE?	
-def in_path(location, path_points):
-	# actual coords
-	if location in path_points:
-		return True
-	temp_loc = location
-	# next position (0,1)
-	temp_loc[0][0] = location[0][0] + 1
-	if location in path_points:
-		return True
-	# (1,1)
-	temp_loc[0][0] = location[0][0] + 1
-	temp_loc[0][1] = location[0][1] + 1
-	if location in path_points:
-		return True
-	#(0,1)
-	temp_loc[0][1] = location[0][1] + 1
-	if location in path_points:
-		return True
-	#(-1,1)
-	temp_loc[0][0] = location[0][0] - 1
-	temp_loc[0][1] = location[0][1] + 1
-	if location in path_points:
-		return True
-	#(-1,0)
-	temp_loc[0][0] = location[0][0] - 1
-	if temp_loc in path_points:
-		return True
-	#(-1,-1)
-	temp_loc[0][0] = location[0][0] - 1
-	temp_loc[0][1] = location[0][1] - 1
-	if location in path_points:
-		return True
-	#(0,-1)
-	temp_loc[0][1] = location[0][1] - 1
-	if location in path_points:
-		return True
-	#(1,-1)
-	temp_loc[0][0] = location[0][0] + 1
-	temp_loc[0][1] = location[0][1] - 1
-	if location in path_points:
-		return True
-	
-	return False
+	return False, path, path_str, dir
 
 
 def main(win, width):
@@ -378,7 +312,6 @@ def main(win, width):
 	end = None
 	
 	make_set_barrier(grid)
-	plot_items(grid)
 
 	run = True
 	while run:
@@ -428,7 +361,6 @@ def main(win, width):
 						start.make_start()
 						end = None
 						make_set_barrier(grid)
-						plot_items(grid)
 						
 
 				if event.key == pygame.K_c:
