@@ -133,32 +133,34 @@ def h(p1, p2):
 	x2, y2 = p2
 	return abs(x1 - x2) + abs(y1 - y2)
 
-def create_string(prev_spot, curr_spot, next_spot):
-    dir = ""
-	# everything is in reverse, so if it says left, logically it should be right
-    if (next_spot.col > curr_spot.col and curr_spot.row == next_spot.row and prev_spot.row > curr_spot.row):
-        dir = "right"
-    elif (next_spot.col > curr_spot.col and curr_spot.row == next_spot.row and prev_spot.row < curr_spot.row): 
-        dir = "left"
-    elif (next_spot.col < curr_spot.col and curr_spot.row == next_spot.row and prev_spot.row > curr_spot.row):
-        dir = "left"
-    elif (next_spot.col < curr_spot.col and curr_spot.row == next_spot.row and prev_spot.row < curr_spot.row):
-        dir = "right"
-    elif (next_spot.row > curr_spot.row and curr_spot.col == next_spot.col and prev_spot.col > curr_spot.col):
-        dir = "left"
-    elif (next_spot.row > curr_spot.row and curr_spot.col == next_spot.col and prev_spot.col < curr_spot.col):
-        dir = "right"
-    elif (next_spot.row < curr_spot.row and curr_spot.col == next_spot.col and prev_spot.col > curr_spot.col):
-        dir = "right"
-    elif (next_spot.row < curr_spot.row and curr_spot.col == next_spot.col and prev_spot.col < curr_spot.col):
-        dir = "left"
+def pythagorean(p1, p2):
+	x1, y1 = p1
+	x2, y2 = p2
+	return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
-    curr_str = f"Next: ({prev_spot.row}, {prev_spot.col}), Curr: ({curr_spot.row}, {curr_spot.col}), Prev: ({next_spot.row}, {next_spot.col}), ({dir})"
+def create_string(prev_spot, curr_spot, next_spot):
+    v1x = curr_spot.row - prev_spot.row
+    v1y = curr_spot.col - prev_spot.col
+    v2x = next_spot.row - curr_spot.row
+    v2y = next_spot.col - curr_spot.col
+    dir = ""
+    turned = False
+    if (v1x*v2y - v1y*v2x) > 0:
+        dir = "Left"
+        turned = True
+    elif (v1x*v2y - v1y*v2x) < 0:
+        dir = "Right"
+        turned = True
+
+    directions = f"Straight until: ({curr_spot.row}, {curr_spot.col}), Turn: {dir}"
+    # curr_str = f"Next: ({prev_spot.row}, {prev_spot.col}), Curr: ({curr_spot.row}, {curr_spot.col}), Prev: ({next_spot.row}, {next_spot.col}), ({dir})"
     # print(curr_str)
-    return curr_str
+    return curr_spot, directions, dir, turned
 
 def print_path(came_from, next_points, current):
-	path_str = []
+	path_str = ""
+	path = []
+	turn_dir = []
 	temp = ""
 	prev_spot = current
 	count = 0
@@ -173,76 +175,41 @@ def print_path(came_from, next_points, current):
 				next_spot = next_points[current]
 			except:
 				print("end")
+			if count == 0:
+					arrived = f"({current.row}, {current.col}) Arrived!"
+					arrival = [(current.row), (current.col)]
+					path.append(arrival)
+					path_str = arrival
+					turn_dir.append("Arrived!")
 
 			current.make_path()
 			if count >= 1 and count < max:
-				temp = create_string(prev_spot, current, next_spot)
-				print(temp)
+				temp, temp_str, dir, turned = create_string(prev_spot, current, next_spot)
+				print(temp.row)
+				print(temp.col)
 				# file.write(temp)
-				if current == next_spot:
-					path_str.append("(Arrived)")
-				else:
-					path_str.insert(0, temp)
+				if turned:
+					temp_arr = [(temp.row), (temp.col)]
+					path_str = temp_str + path_str
+					path.insert(0, temp)
+					turn_dir.insert(0, dir)
 			count += 1
 			# formatted = temp
-		for i in range(len(path_str)):
-			format_str = f"{path_str[i]} \n"
-			file.write(format_str)
-			
-def in_path(location, path_points):
-	# actual coords
-	if location in path_points:
-		return True
-	temp_loc = location
-	# next position (0,1)
-	temp_loc[0][0] = location[0][0] + 1
-	if location in path_points:
-		return True
-	# (1,1)
-	temp_loc[0][0] = location[0][0] + 1
-	temp_loc[0][1] = location[0][1] + 1
-	if location in path_points:
-		return True
-	#(0,1)
-	temp_loc[0][1] = location[0][1] + 1
-	if location in path_points:
-		return True
-	#(-1,1)
-	temp_loc[0][0] = location[0][0] - 1
-	temp_loc[0][1] = location[0][1] + 1
-	if location in path_points:
-		return True
-	#(-1,0)
-	temp_loc[0][0] = location[0][0] - 1
-	if temp_loc in path_points:
-		return True
-	#(-1,-1)
-	temp_loc[0][0] = location[0][0] - 1
-	temp_loc[0][1] = location[0][1] - 1
-	if location in path_points:
-		return True
-	#(0,-1)
-	temp_loc[0][1] = location[0][1] - 1
-	if location in path_points:
-		return True
-	#(1,-1)
-	temp_loc[0][0] = location[0][0] + 1
-	temp_loc[0][1] = location[0][1] - 1
-	if location in path_points:
-		return True
-	
-	return False
+		# for i in range(len(path_str)):
+		# 	format_str = f"{path_str[i]} \n"
+		# 	file.write(format_str)
+		return path_str, path, dir
 
 def reconstruct_path(came_from, current, draw):
 	with open(file_found, 'w') as file:
 		while current in came_from:	
 			current = came_from[current]
 			current.make_path()
-			draw()
+			# draw()
 			formatted = f"{current.row} {current.col}\n"
 			file.write(formatted)
 
-def algorithm(draw, grid, start, end):
+def algorithm(grid, start, end):
 	count = 0
 	open_set = PriorityQueue() #open set
 	open_set.put((0, count, start)) # put start node in open set
@@ -251,6 +218,8 @@ def algorithm(draw, grid, start, end):
 	g_score[start] = 0
 	f_score = {spot: float("inf") for row in grid for spot in row} # keeps track of the predicted distance from this node to the end node
 	f_score[start] = h(start.get_pos(), end.get_pos()) # initial is the heuristic from start to end
+	path = []
+	path_str = []
 
 	open_set_hash = {start} #help to see what is in the open set
 
@@ -267,9 +236,10 @@ def algorithm(draw, grid, start, end):
 			next_points = came_from.copy()
 			next_points.popitem()
 			reconstruct_path(came_from, end, draw)
-			print_path(came_from, next_points, end)
+			path_str, path, dir = print_path(came_from, next_points, end)
 			end.make_end()
-			return True
+			print("ended")
+			return True, path, path_str, dir
 
 		for neighbor in current.neighbors: 
 			temp_g_score = g_score[current] + 1
@@ -286,12 +256,11 @@ def algorithm(draw, grid, start, end):
 					open_set_hash.add(neighbor)
 					neighbor.make_open()
 
-		draw()
-
+		
 		if current != start:
 			current.make_closed()
 
-	return False
+	return False, path, path_str, dir
 
 
 def make_grid(rows, width):
@@ -338,12 +307,6 @@ def plot_items(grid):
 	for i in range(len(item_name)):
 		spot = grid[int(item_location[i][0])][int(item_location[i][1])]
 		spot.make_item()
-
-def get_location():
-	#getting the location
-	for i in 10:
-		x = 10
-
 
 def make_set_barrier(grid):
 	num_shelves_x = 4
@@ -414,7 +377,7 @@ def main(win, width):
 						for spot in row:
 							spot.update_neighbors(grid)
 
-					returned = algorithm(lambda: draw(win, grid, ROWS, width), grid, start, end)
+					returned = algorithm(grid, start, end)
 					if returned:
 						start = end
 						start.make_start()
