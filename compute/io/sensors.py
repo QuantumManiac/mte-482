@@ -22,7 +22,7 @@ def adc(zmq: zmq.Context, i2c: busio.I2C):
         # print(f"[ADC] chan0 voltage: {chan0.voltage}, chan1 voltage: {chan1.voltage}, chan2 voltage: {chan2.voltage}, chan3 voltage: {chan3.voltage}")
         send_zmq_json(pub, "adc", {
             "channel0": chan0.voltage,
-            "channnl1": chan1.voltage,
+            "channel1": chan1.voltage,
             "channel2": chan2.voltage,
             "channel3": chan3.voltage
         })
