@@ -29,7 +29,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         output_pwm = 0
         topic, adc_msg = adc_sub.recv_string().split(' ', 1)
         topic, push_msg = push_sub.recv_string().split(' ', 1)
-        print("sending")
+        # print("sending")
 
         try :
             adc_msg: dict = json.loads(adc_msg)

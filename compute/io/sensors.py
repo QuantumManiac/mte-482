@@ -57,20 +57,27 @@ def pushbutton(zmq: zmq.Context):
 
 
 def imu(zmq: zmq.Context, i2c: busio.I2C):
-    from adafruit_bno08x import BNO_REPORT_ACCELEROMETER
+    from adafruit_bno08x import BNO_REPORT_ACCELEROMETER, BNO_REPORT_ROTATION_VECTOR
     from adafruit_bno08x.i2c import BNO08X_I2C
     pub = setup_zmq_pub(zmq)
     bno = BNO08X_I2C(i2c)
     bno.enable_feature(BNO_REPORT_ACCELEROMETER)
+    bno.enable_feature(BNO_REPORT_ROTATION_VECTOR)
 
     while True:
         accel_x, accel_y, accel_z = bno.acceleration
+        quat_i, quat_j, quat_k, quat_real = bno.quaternion
         # print("[IMU] X: %0.6f  Y: %0.6f Z: %0.6f  m/s^2" % (accel_x, accel_y, accel_z))
         send_zmq_json(pub, "imu", {
             "accel_x": accel_x,
             "accel_y": accel_y,
-            "accel_z": accel_z
+            "accel_z": accel_z,
+            "quat_i": quat_i,
+            "quat_j": quat_j,
+            "quat_k": quat_k,
+            "quat_real": quat_real
         })
+        # TODO: check if sampling rate is good
         sleep(0.1)
 
 def voltage(zmq: zmq.Context):
