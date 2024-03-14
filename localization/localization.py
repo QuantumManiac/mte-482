@@ -49,6 +49,7 @@ class Localization:
         self.calibrate_imu()
 
     def calibrate_imu(self):
+        print("Calibrating IMU ...")
         # determine bias in accelerometer and angle
         CALIBRATION_DURATION = 3
         X_EPSILON = 0.1
@@ -84,6 +85,7 @@ class Localization:
                 abs(y_error) < Y_EPSILON and
                 abs(head_error) < HEAD_EPSILON):
                 if (time.time() - prev_time) > CALIBRATION_DURATION:
+                    print("IMU calibrated successfully")
                     return 
                 continue
 

@@ -66,6 +66,7 @@ if __name__ == "__main__":
         exit()
 
     prev = 0
+    print("Camera started successfully")
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
