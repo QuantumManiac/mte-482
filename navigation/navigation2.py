@@ -31,6 +31,7 @@ def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
         pass     
     
 def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
+    currentX, currentY, heading = state.currentX, state.currentY, state.heading
     # TODO Calculate route based on current position and destination
     # Get the destination from the database
 
@@ -64,7 +65,8 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
 def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket):
     with session.begin():
         state.state = NavState.IDLE
-        state.routeTo = None
+        state.destX = None
+        state.destY = None
         state.route = None
         state.nextStep = None
         state.distToNextStep = None
