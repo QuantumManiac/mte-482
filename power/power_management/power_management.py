@@ -54,19 +54,18 @@ def main():
             voltage_query_attempts += 1
             if voltage_query_attempts > 10:
                 print("Failing to get voltage readings, assuming critical voltage")
-                handle_critical()
-            continue
-
-        if voltage == 0:
-            # Invalid voltage reading
-            continue
-        elif voltage > 13.5:
-            continue
-        elif voltage > 12.8:
-            handle_low(pub)
+                # handle_critical()
         else:
-            print("Voltage critical")
-            handle_critical()
+            if voltage == 0:
+                # Invalid voltage reading
+                continue
+            elif voltage > 13.5:
+                continue
+            elif voltage > 12.8:
+                handle_low(pub)
+            else:
+                print("Voltage critical")
+                handle_critical()
 
         sleep(1 / TICK_RATE)
 

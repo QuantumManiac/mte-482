@@ -5,10 +5,10 @@ tmux new-session -d -s $SESSION_NAME
 
 # List of your Python scripts
 SCRIPTS=(
-    "cd compute/io && . venv/bin/activate && python sudo sensors.py"
+    "cd power/power_management && . venv/bin/activate && sudo python power_management.py"
+    "cd compute/io && . venv/bin/activate && sudo python sensors.py"
     "cd compute/io && . venv/bin/activate && python serial_to_arduino.py"
     "cd localization/qr && . venv/bin/activate && python camera.py"
-    "cd power/power_management && . venv/bin/activate && sudo python main.py"
 )
 
 # First script execution - need to handle the first pane differently
