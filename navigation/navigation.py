@@ -179,7 +179,7 @@ def print_path(came_from, next_points, current):
 					arrived = f"({current.row}, {current.col}) Arrived!"
 					arrival = [(current.row), (current.col)]
 					path.append(arrival)
-					path_str = arrival
+					path_str = arrived
 					turn_dir.append("Arrived!")
 
 			current.make_path()
@@ -219,7 +219,7 @@ def algorithm(grid, start, end):
 	f_score = {spot: float("inf") for row in grid for spot in row} # keeps track of the predicted distance from this node to the end node
 	f_score[start] = h(start.get_pos(), end.get_pos()) # initial is the heuristic from start to end
 	path = []
-	path_str = []
+	path_str = ""
 
 	open_set_hash = {start} #help to see what is in the open set
 
