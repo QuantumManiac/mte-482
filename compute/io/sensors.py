@@ -89,7 +89,7 @@ def voltage(zmq: zmq.Context):
     while True:
         if ina.is_conversion_ready():
             voltage = ina.voltage()
-            print("[VOLTAGE] Bus Voltage: %0.6f" % (voltage * VOLTAGE_MULTIPLIER))
+            # print("[VOLTAGE] Bus Voltage: %0.6f" % (voltage * VOLTAGE_MULTIPLIER))
             send_zmq_msg(pub, "battery_voltage", str(voltage * VOLTAGE_MULTIPLIER))
         sleep(0.1)
     
@@ -107,6 +107,7 @@ def send_zmq_json(pub: zmq.Socket, topic: str, msg: dict):
     pub.send_string(f"{topic} {serialized}")
 
 def main():
+    print("Starting sensor processes...")
     ctx = zmq.Context()
     i2c = I2C(3)
 
