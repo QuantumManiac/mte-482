@@ -1,8 +1,6 @@
 import pygame
-import numpy
 import math
 from queue import PriorityQueue
-import json
 
 file_path = 'C:/UW/4B/MTE482/items.txt'
 file_found = 'C:/UW/4B/MTE482/path.txt'
