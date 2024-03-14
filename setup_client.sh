@@ -10,4 +10,11 @@ cd localization/qr
 pip install -r requirements.txt
 deactivate
 
-cd ..
+cd ../..
+
+cd power/power_management
+. venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+cd ../..
