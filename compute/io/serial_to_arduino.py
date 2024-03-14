@@ -65,5 +65,6 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         # sleep(2)
 
 if __name__ == '__main__':
+    print("Starting serial to arduino process...")
     zmq_ctx = zmq.Context()
     zmq_to_serial(zmq_ctx, "/dev/ttyS0")
