@@ -7,7 +7,7 @@ tmux new-session -d -s $SESSION_NAME
 SCRIPTS=(
     "cd compute/io && source venv/bin/activate && python sensors.py"
     "cd compute/io && source venv/bin/activate && python serial_to_arduino.py"
-    "cd navigation/qr && source venv/bin/activate && python qr.py"
+    "cd localization/ && source venv/bin/activate && cd qr && python camera.py"
     "cd power/power_management && source venv/bin/activate && python main.py"
 )
 
