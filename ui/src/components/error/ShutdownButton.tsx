@@ -10,7 +10,7 @@ export default function ShutdownButton() {
   const socket: Socket = io(env.NEXT_PUBLIC_SOCKETIO_PORT);
 
   function sendShutdownMessage() {
-    socket.emit('shutdown', {topic: 'shutdown', msg: 'shutdown'});
+    socket.emit('ui_message', {topic: 'shutdown', msg: 'shutdown'});
   }
 
   return (
