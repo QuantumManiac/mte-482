@@ -2,12 +2,10 @@
 
 import NavLink from "./NavLink";
 import StatusBar from "./statusBar/StatusBar";
-import { usePathname } from "next/navigation";
 
 // Navbar is on right of the page
 
 export default function Nav() {
-    const pathName = usePathname();
     return (
         <div className="fixed top-0 right-0 h-screen bg-gray-800 flex flex-col justify-between w-32">
             <StatusBar/>

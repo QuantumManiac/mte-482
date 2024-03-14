@@ -35,7 +35,7 @@ export default function ProductOverviewActions(
             <div className="flex flex-row">
                 <ActionButton style="bg-yellow-300 flex-1" icon="🔙" text="Back" onClick={() => router.back()}/>
                 {inCart ? <ActionButton style="bg-red-300 flex-1" icon="❌" text="Remove from Cart" onClick={() => handleCartModifyAndState(item)}/> : <ActionButton style="bg-green-300 flex-1" icon="➕" text="Add to Cart" onClick={() => handleCartModifyAndState(item)}/>}
-                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To" onClick={() => startRoute(item.id)}/>
+                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To" onClick={() => startRoute({name: item.name, x: item.locationX, y: item.locationY})}/>
             </div>
         )
     }

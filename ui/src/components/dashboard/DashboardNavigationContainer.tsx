@@ -10,7 +10,6 @@ import { cancelRoute } from "~/app/actions";
 
 import DashboardNavigation from "./DashboardNavigation";
 
-
 interface DashboardNavigationContainerProps {
     initialNavigationState: NavigationState | null;
     getNavigationState: () => Promise<NavigationState | null>;

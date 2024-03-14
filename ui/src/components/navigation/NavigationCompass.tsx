@@ -1,11 +1,11 @@
 import Image from "next/image";
 
-interface DashboardNavigationCompassProps {
+interface NavigationCompassProps {
     heading: number;
     desiredHeading: number | null;
 }
 
-export default function DashboardNavigationCompass({heading, desiredHeading}: DashboardNavigationCompassProps) {
+export default function NavigationCompass({heading, desiredHeading}: NavigationCompassProps) {
   // Calculate the rotation angle for the arrow
   const rotationAngle = (desiredHeading ?? 0) - heading;
 

@@ -25,13 +25,21 @@ export async function cancelRoute(): Promise<void> {
   });
 }
 
-export async function startRoute(routeTo: number): Promise<void> {
+interface Destination {
+  name: string;
+  x: number | null;
+  y: number | null;
+}
+
+export async function startRoute(dest: Destination): Promise<void> {
   "use server";
   await db.navigationState.update({
     where: { id: 0 },
     data: {
       state: NavState.START_NAV,
-      routeTo: routeTo.toString(),
+      destName: dest.name,
+      destX: dest.x,
+      destY: dest.y,
     },
   });
 }

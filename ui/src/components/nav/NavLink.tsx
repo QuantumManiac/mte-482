@@ -1,6 +1,5 @@
 'use client' 
 
-import Link from "next/link";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
@@ -12,7 +11,7 @@ interface NavLinkProps {
 export default function NavLink({name, path}: NavLinkProps) {
     const pathName = usePathname();
     return (
-      <Link href={path} className={
+      <a href={path} className={
             clsx(
               "border-y border-white flex grow items-center justify-center text-xl",
               {
@@ -21,11 +20,10 @@ export default function NavLink({name, path}: NavLinkProps) {
               }
             )
         }
-        prefetch={false}
         >
           
             <h1 className="text-center text-white font-bold text-lg p-5">{name}</h1>
-    </Link>
+    </a>
     )
 
 }
