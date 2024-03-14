@@ -1,6 +1,6 @@
 zmq==0.0.0
 pyzbar==0.1.9
 cv==1.0.0
-cv-bridge==3.1.3
+cv-bridge==1.13.0.post0
 gpiozero==2.0
 pyzmq==25.1.2
