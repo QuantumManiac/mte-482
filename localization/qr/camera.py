@@ -82,10 +82,16 @@ if __name__ == "__main__":
             processed_frame, pos_x, pos_y, angle = process_frame(frame, qr)
             # Publish the resulting position and angle
             msg = {
-                "pos_x": float(pos_x),
-                "pos_y": float(pos_y),
-                "angle": float(angle)
-            }
+                    "pos_x": pos_x,
+                    "pos_y": pos_y,
+                    "angle": angle
+                }
+            if (pos_x is not None) and (pos_y is not None) and (angle is not None):
+                msg = {
+                    "pos_x": float(pos_x),
+                    "pos_y": float(pos_y),
+                    "angle": float(angle)
+                }
             pub.send_string(f"qr {json.dumps(msg)}")
             # print(f"angle: {angle} position: {pos_x} {pos_y}")
 
