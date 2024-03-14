@@ -1,5 +1,6 @@
 zmq==0.0.0
 pyzbar==0.1.9
+opencv-python==4.9.0.80
 cv==1.0.0
 cv-bridge==1.13.0.post0
 gpiozero==2.0
