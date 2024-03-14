@@ -36,7 +36,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         except ValueError:
             pass
         
-        if push_msg is not 0:
+        if push_msg != 0:
             #  Calculate PWM for each motor and send to ARDUINO
             left = adc_msg["channel0"] - adc_msg["channel1"]
             right = adc_msg["channel2"] - adc_msg["channel3"]
