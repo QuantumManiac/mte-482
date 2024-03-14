@@ -31,8 +31,7 @@ def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
     try:
         _, msg = zmq_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
         x, y, heading = msg.split(',')
-        with session.begin():
-            session.query(NavigationState).filter(NavigationState.id == 0).update({NavigationState.currentX: x, NavigationState.currentY: y, NavigationState.heading: heading})
+        session.query(NavigationState).filter(NavigationState.id == 0).update({NavigationState.currentX: x, NavigationState.currentY: y, NavigationState.heading: heading})
     except zmq.error.ZMQError:
         pass     
     
@@ -60,16 +59,15 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
         else:
             heading = 360
 
-    with session.begin():
-        state.state = NavState.NAVIGATING.value
-        # state.nextStep = 'left'
-        state.nextStep = next_step
-        # state.distToNextStep = 5
-        state.distToNextStep = dist_to_next
-        # state.desiredHeading = 180
-        state.desiredHeading = heading
-        # state.route = ...
-        state.route = path_str
+    state.state = NavState.NAVIGATING.value
+    # state.nextStep = 'left'
+    state.nextStep = next_step
+    # state.distToNextStep = 5
+    state.distToNextStep = dist_to_next
+    # state.desiredHeading = 180
+    state.desiredHeading = heading
+    # state.route = ...
+    state.route = path_str
 
     pub.send_string(f'zmq_navigation {NavMessages.START_NAV.value}')
 
@@ -113,19 +111,18 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
     else:
         heading = 360
 
-    with session.begin():
-        # TODO Update State
-        # state.nextStep = 'left'
-        state.nextStep = dir[0]
-        # state.distToNextStep = 5
-        state.distToNextStep = dist_to_next
-        # state.desiredHeading = 5
-        state.desiredHeading = heading
-        # Also change the route if recalculated
-        # state.route = ...
-        if notification == NavMessages.RECALCULATED:
-            state.route = path_str
-        pass
+    # TODO Update State
+    # state.nextStep = 'left'
+    state.nextStep = dir[0]
+    # state.distToNextStep = 5
+    state.distToNextStep = dist_to_next
+    # state.desiredHeading = 5
+    state.desiredHeading = heading
+    # Also change the route if recalculated
+    # state.route = ...
+    if notification == NavMessages.RECALCULATED:
+        state.route = path_str
+    pass
 
     pub.send_string(f'zmq_navigation {notification.value}')
 
@@ -140,20 +137,22 @@ def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket)
     pub.send_string(f'zmq_navigation {NavMessages.CANCELLED}')
 
 def tick(session: Session, pub: zmq.Socket):
-    with session.begin():
-        state = session.query(NavigationState).filter(NavigationState.id == 0).first()
-
+    state = session.query(NavigationState).filter(NavigationState.id == 0).first()
+    
     match state.state:
         case NavState.IDLE.value:
             return
         case NavState.START_NAV.value:
+            print("Start nav")
             calculate_route(session, state, pub)
         case NavState.NAVIGATING.value:
             update_navigation_state(session, state, pub)
         case NavState.PENDING_CANCEL.value:
+            print("Pending cancel")
             cancel_navigation(session, pub)
 
 def main():    
+    print("Starting navigation process...")
     context = zmq.Context()
     session = init_session()
     pub = context.socket(zmq.PUB)
@@ -165,9 +164,8 @@ def main():
     sub.setsockopt(zmq.SUBSCRIBE, b"zmq_localization")
 
     # Create initial navigation state
-    with session.begin():
-        session.query(NavigationState).delete()
-        session.add(NavigationState(id=0, state=NavState.IDLE.value))
+    session.query(NavigationState).delete()
+    session.add(NavigationState(id=0, state=NavState.IDLE.value))
 
     # Update state every 300ms
     while True:
