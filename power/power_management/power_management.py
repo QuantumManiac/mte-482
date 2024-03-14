@@ -13,7 +13,7 @@ TICK_RATE = 3  # Hz
 def handle_critical():
     print("Critical state! Shutting down...")
     # shutdown command
-    # os.system("shutdown now")
+    os.system("sudo shutdown now")
 
 def handle_low(zmq_pub: zmq.Socket):
     print("Battery voltage low! Displaying warning message...")
