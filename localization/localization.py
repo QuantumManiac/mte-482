@@ -1,6 +1,5 @@
 import zmq
 import json
-import threading
 import time
 import math
 
