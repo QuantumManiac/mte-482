@@ -5,6 +5,7 @@ import PushAssistIndicator from "./PushAssistIndicator";
 import { useEffect, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import { env } from "~/env"
+import PowerStateListener from "./PowerStateListener";
 
 interface ServerToClientEvents {
     zmq_battery_voltage: (b: number) => void;
@@ -49,9 +50,10 @@ export default function StatusBar() {
     const [pushAssistThrottle, setPushAssistThrottle] = useState<number | undefined>(undefined);
 
     return (
-        <div className="border-b text-white border-white text-sm p-3">
+        <div className=" text-white text-sm p-3">
             <BatteryIndicator value={battery}/>
             <PushAssistIndicator active={pushAssistEnabled} throttle={pushAssistThrottle}/>
+            <PowerStateListener />
         </div>
     )
 }

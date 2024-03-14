@@ -7,7 +7,7 @@ import json
 
 
 SHOW_VIDEO = False
-ZMQ_PUB = "tcp://192.168.137.10:5556"
+ZMQ_PUB = "tcp://172.20.10.4:5556"
 
 
 def calculate_angle(p1, p2):

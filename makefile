@@ -5,7 +5,7 @@ zeromq:
 server:
 	./run_server.sh
 client:
-	sudo ./run_client.sh
+	./run_client.sh
 setup_server:
 	./setup_server.sh
 setup_client:
