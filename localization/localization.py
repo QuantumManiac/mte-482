@@ -115,9 +115,10 @@ class Localization:
             topic, camera_msg = self.camera_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             camera_msg = json.loads(camera_msg)
 
-            self.x = camera_msg["pos_x"]
-            self.y = camera_msg["pos_y"]
-            camera_heading = camera_msg["angle"]
+            if (camera_msg["pos_x"] is not None) and (camera_msg["pos_y"] is not None) and (camera_msg["angle"] is not None):
+                self.x = camera_msg["pos_x"]
+                self.y = camera_msg["pos_y"]
+                camera_heading = camera_msg["angle"]
 
         except zmq.Again as e:
             pass
@@ -129,32 +130,32 @@ class Localization:
 
             accel_x = imu_msg["accel_x"]
             accel_y = imu_msg["accel_y"]
-            accel_z = imu_msg["accel_z"]            
 
             # heading calculation
-            self.heading = self.calculate_imu_heading(imu_msg["quat_real"], imu_msg["quat_i"], imu_msg["quat_j"], imu_msg["quat_k"])
-            if camera_heading is not None:
-                # update the heading correction factor
-                self.heading_bias = camera_heading - self.heading
-            
-            self.heading += self.heading_bias  # fix to camera value (global absolute)
+            if (accel_x is not None and accel_y is not None):
+                self.heading = self.calculate_imu_heading(imu_msg["quat_real"], imu_msg["quat_i"], imu_msg["quat_j"], imu_msg["quat_k"])
+                if camera_heading is not None:
+                    # update the heading correction factor
+                    self.heading_bias = camera_heading - self.heading
+                
+                self.heading += self.heading_bias  # fix to camera value (global absolute)
 
-            # Maintain heading within specified range
-            if self.heading > 180:
-                self.heading -= 360
-            elif self.heading < -180:
-                self.heading += 360
+                # Maintain heading within specified range
+                if self.heading > 180:
+                    self.heading -= 360
+                elif self.heading < -180:
+                    self.heading += 360
 
-            # dead reckoning
-            t = time.time()
-            dt = t - self.prev_imu_update_time
-            self.prev_imu_update_time = t
-            
-            self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
-            self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
+                # dead reckoning
+                t = time.time()
+                dt = t - self.prev_imu_update_time
+                self.prev_imu_update_time = t
+                
+                self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
+                self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
 
-            self.vel_x += (accel_x*dt)
-            self.vel_y += (accel_y*dt)
+                self.vel_x += (accel_x*dt)
+                self.vel_y += (accel_y*dt)
 
         except zmq.Again as e:
             pass
