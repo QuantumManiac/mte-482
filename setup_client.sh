@@ -1,9 +1,14 @@
 cd compute/io/ 
-source venv/bin/activate 
 pip install -r requirements.txt
-deactivate
 
 cd ../..
 
-# TODO: Add navigation scripts
-# TODO: Power Management Script
+cd navigation/qr
+pip install -r requirements.txt
+
+cd ..
+
+cd power/power_management
+pip install -r requirements.txt
+
+cd ../..

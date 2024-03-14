@@ -6,7 +6,8 @@ tmux new-session -d -s $SESSION_NAME
 SCRIPTS=(
     "cd ui && yarn start"
     "cd compute/zeromq && source venv/bin/activate && python proxy.py"
-    # TODO navigation, localization scripts
+    "cd localization && source venv/bin/activate && python localization.py"
+    "cd navigation && source venv/bin/activate && python navigation.py"
     )
 
 # First script execution - need to handle the first pane differently
