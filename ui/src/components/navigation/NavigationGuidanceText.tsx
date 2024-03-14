@@ -10,19 +10,19 @@ export default function NavigationGuidanceText({navigationState}: GuidanceTextPr
     function determineNavigationTextAndIcon(): [string, string] {
         switch (navigationState.nextStep) {
             case "arrive":
-                 return [`Destination in ${navigationState.distToNextStep} meters`, "🏁"]
+                 return [`Destination in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
             case "left":
-                return [`Turn left in ${navigationState.distToNextStep} m`, "⬅️"]
+                return [`Turn left in ${navigationState.distToNextStep?.toFixed(1)} m`, "⬅️"]
             case "right":
-                return [`Turn right in ${navigationState.distToNextStep} m`, "➡️"]
+                return [`Turn right in ${navigationState.distToNextStep?.toFixed(1)} m`, "➡️"]
             default:
-                return ["No Direction Provided", "❔"]
+                return ["Currently Not Navigating", "💤"]
     }}
 
     const [navigationText, navigationIcon] = determineNavigationTextAndIcon()
 
     return (
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center w-full">
             <div className="text-2xl flex-1 px-2">
                 {navigationText}
             </div>

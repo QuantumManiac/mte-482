@@ -15,6 +15,9 @@ const config = {
         },
         {
             hostname: "192.168.137.10"
+        },
+        {
+            hostname: "172.20.10.4"
         }
         ],
     }

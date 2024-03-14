@@ -1,9 +1,20 @@
 cd compute/io/ 
-source venv/bin/activate 
+. venv/bin/activate
 pip install -r requirements.txt
 deactivate
 
 cd ../..
 
-# TODO: Add navigation scripts
-# TODO: Power Management Script
+cd localization/qr
+. venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+cd ../..
+
+cd power/power_management
+. venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+cd ../..

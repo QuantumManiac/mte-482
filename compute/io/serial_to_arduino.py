@@ -7,12 +7,12 @@ import math
 def zmq_to_serial(context: zmq.Context, uart_port: str):
     adc_sub: zmq.Socket = context.socket(zmq.SUB)
     adc_sub.setsockopt(zmq.CONFLATE, 1)
-    adc_sub.connect("tcp://192.168.137.10:5555")
+    adc_sub.connect("tcp://172.20.10.4:5555")
     adc_sub.setsockopt(zmq.SUBSCRIBE, b"adc")
 
     push_sub: zmq.Socket = context.socket(zmq.SUB)
     push_sub.setsockopt(zmq.CONFLATE, 1)
-    push_sub.connect("tcp://192.168.137.10:5555")
+    push_sub.connect("tcp://172.20.10.4:5555")
     push_sub.setsockopt(zmq.SUBSCRIBE, b"push_assist")
 
     uart = serial.Serial(uart_port, 115200)
@@ -29,14 +29,14 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         output_pwm = 0
         topic, adc_msg = adc_sub.recv_string().split(' ', 1)
         topic, push_msg = push_sub.recv_string().split(' ', 1)
-        print("sending")
+        # print("sending")
 
         try :
             adc_msg: dict = json.loads(adc_msg)
         except ValueError:
             pass
         
-        if push_msg is not 0:
+        if push_msg != 0:
             #  Calculate PWM for each motor and send to ARDUINO
             left = adc_msg["channel0"] - adc_msg["channel1"]
             right = adc_msg["channel2"] - adc_msg["channel3"]
@@ -65,5 +65,6 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         # sleep(2)
 
 if __name__ == '__main__':
+    print("Starting serial to arduino process...")
     zmq_ctx = zmq.Context()
     zmq_to_serial(zmq_ctx, "/dev/ttyS0")

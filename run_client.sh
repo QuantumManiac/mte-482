@@ -2,27 +2,21 @@ SESSION_NAME="client"
 
 tmux new-session -d -s $SESSION_NAME
 
-# List of your Python scripts
-SCRIPTS=(
-    "cd compute/io && source venv/bin/activate && python3 sensors.py"
-    "cd compute/io && source venv/bin/activate && python3 serial_to_arduino.py"
-    # TODO localization script
-    # TODO power management script
-    )
+tmux send-keys -t $SESSION_NAME "cd power/power_management && . venv/bin/activate && python power_management.py" C-m
 
-# First script execution - need to handle the first pane differently
-tmux send-keys -t $SESSION_NAME "${SCRIPTS[0]}" C-m
+tmux split-window -v
+tmux select-pane -t 1
+tmux send-keys -t $SESSION_NAME "cd compute/io && . venv/bin/activate && python sensors.py" C-m
 
-# Execute the rest of the scripts in new panes
-for (( i=1; i<${#SCRIPTS[@]}; i++ ))
-do
-    # Split the window vertically
-    tmux split-window -v
-    # Select the newly created pane
-    tmux select-pane -t $i
-    # Execute the script
-    tmux send-keys -t $SESSION_NAME "${SCRIPTS[$i]}" C-m
-done
+
+tmux split-window -v
+tmux select-pane -t 2
+tmux send-keys -t $SESSION_NAME "cd compute/io && . venv/bin/activate && python serial_to_arduino.py" C-m
+
+
+tmux split-window -v
+tmux select-pane -t 3
+tmux send-keys -t $SESSION_NAME "cd localization/qr && . venv/bin/activate && python camera.py" C-m
 
 # Finally, attach to the tmux session
 tmux attach-session -t $SESSION_NAME

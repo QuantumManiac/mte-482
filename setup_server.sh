@@ -1,13 +1,27 @@
 
-cd ui 
+cd ui/ 
 yarn install
 yarn build
 
-cd ../compute/zeromq
+cd ..
+
+cd compute/zeromq/
 source venv/bin/activate
 pip install -r requirements.txt
 deactivate
 
 cd ../..
 
-# TODO Navigation, localization scripts
+cd localization/
+source venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+cd ..
+
+cd navigation/
+source venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+cd ..

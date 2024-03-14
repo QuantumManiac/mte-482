@@ -7,7 +7,7 @@ import json
 
 
 SHOW_VIDEO = False
-ZMQ_PUB = "tcp://192.168.137.10:5556"
+ZMQ_PUB = "tcp://172.20.10.4:5556"
 
 
 def calculate_angle(p1, p2):
@@ -66,6 +66,7 @@ if __name__ == "__main__":
         exit()
 
     prev = 0
+    print("Camera started successfully")
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -81,10 +82,16 @@ if __name__ == "__main__":
             processed_frame, pos_x, pos_y, angle = process_frame(frame, qr)
             # Publish the resulting position and angle
             msg = {
-                "pos_x": pos_x,
-                "pos_y": pos_y,
-                "angle": angle
-            }
+                    "pos_x": pos_x,
+                    "pos_y": pos_y,
+                    "angle": angle
+                }
+            if (pos_x is not None) and (pos_y is not None) and (angle is not None):
+                msg = {
+                    "pos_x": float(pos_x),
+                    "pos_y": float(pos_y),
+                    "angle": float(angle)
+                }
             pub.send_string(f"qr {json.dumps(msg)}")
             # print(f"angle: {angle} position: {pos_x} {pos_y}")
 

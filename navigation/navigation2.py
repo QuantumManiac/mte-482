@@ -31,6 +31,7 @@ def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
         pass     
     
 def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
+    currentX, currentY, heading = state.currentX, state.currentY, state.heading
     # TODO Calculate route based on current position and destination
     # Get the destination from the database
 
@@ -41,7 +42,7 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
         # state.desiredHeading = 180
         # state.route = ...
 
-    pub.send_string(f'zmq_navigation {NavMessages.START_NAV.value}')
+    pub.send_string(f'navigation {NavMessages.START_NAV.value}')
 
 def update_navigation_state(session: Session, state: NavigationState, pub: zmq.Socket):
     currentX, currentY, heading = state.currentX, state.currentY, state.heading
@@ -59,17 +60,18 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
         # state.route = ...
         pass
 
-    pub.send_string(f'zmq_navigation {notification.value}')
+    pub.send_string(f'navigation {notification.value}')
 
 def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket):
     with session.begin():
         state.state = NavState.IDLE
-        state.routeTo = None
+        state.destX = None
+        state.destY = None
         state.route = None
         state.nextStep = None
         state.distToNextStep = None
         
-    pub.send_string(f'zmq_navigation {NavMessages.CANCELLED}')
+    pub.send_string(f'navigation {NavMessages.CANCELLED}')
 
 def tick(session: Session, pub: zmq.Socket):
     with session.begin():
@@ -94,7 +96,7 @@ def main():
     sub: zmq.Socket = context.socket(zmq.SUB)
     sub.setsockopt(zmq.CONFLATE, 1)
     sub.connect("tcp://127.0.0.1:5555")
-    sub.setsockopt(zmq.SUBSCRIBE, b"zmq_localization")
+    sub.setsockopt(zmq.SUBSCRIBE, b"localization")
 
     # Create initial navigation state
     with session.begin():
