@@ -20,6 +20,7 @@ def handle_low(zmq_pub: zmq.Socket):
     zmq_pub.send_string("power low")
 
 def main():
+    print("Starting power management process...")
     context = zmq.Context()
     voltage_sub: zmq.Socket = context.socket(zmq.SUB)
     voltage_sub.setsockopt(zmq.CONFLATE, 1)

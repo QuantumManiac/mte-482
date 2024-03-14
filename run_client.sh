@@ -8,7 +8,7 @@ SCRIPTS=(
     "cd compute/io && . venv/bin/activate && python sensors.py"
     "cd compute/io && . venv/bin/activate && python serial_to_arduino.py"
     "cd localization/qr && . venv/bin/activate && python camera.py"
-    "cd power/power_management && . venv/bin/activate && python main.py"
+    "cd power/power_management && python main.py"
 )
 
 # First script execution - need to handle the first pane differently
