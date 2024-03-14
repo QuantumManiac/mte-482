@@ -1,3 +1,4 @@
+#!/usr/bin/zsh
 SESSION_NAME="client"
 
 tmux new-session -d -s $SESSION_NAME
@@ -8,7 +9,7 @@ SCRIPTS=(
     "cd compute/io && source venv/bin/activate && python serial_to_arduino.py"
     "cd navigation/qr && source venv/bin/activate && python qr.py"
     "cd power/power_management && source venv/bin/activate && python main.py"
-    )
+)
 
 # First script execution - need to handle the first pane differently
 tmux send-keys -t $SESSION_NAME "${SCRIPTS[0]}" C-m
