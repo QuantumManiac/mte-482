@@ -19,7 +19,7 @@ export default function CartMarker({x, y, heading}: CartMarkerProps) {
       <span
         className="text-3xl" // Using Tailwind's text size scale
       >
-        🔼
+        ⏫
       </span>
     </div>
   );
