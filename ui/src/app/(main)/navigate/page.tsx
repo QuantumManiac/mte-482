@@ -2,6 +2,8 @@ import NavigationContainer from "~/components/navigation/NavigationContainer";
 import { type NavigationState } from "@prisma/client";
 import { db } from "~/server/db";
 
+export const dynamic = 'force-dynamic'
+
 export default async function Page() {
   const navigationState = await db.navigationState.findFirst();
   const cartItems = await db.product.findMany({
