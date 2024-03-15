@@ -21,7 +21,7 @@ export default function ProductOverviewActions(
 
     const handleStartNavigation = () => {
         void startRoute({name: item.name, x: item.locationX, y: item.locationY})
-        router.push('/');
+        window.location.href = "/"
     }
 
     const handleCartModifyAndState = async (item: Product) => {

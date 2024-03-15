@@ -4,8 +4,6 @@ import { type Product } from "@prisma/client";
 
 import ActionButton from "~/components/common/ActionButton";
 
-import { useRouter } from "next/navigation"; 
-
 import { startRoute } from "~/app/actions";
 
 interface ProductListItemProps {
@@ -15,11 +13,10 @@ interface ProductListItemProps {
 }
 
 export default function ProductListItem({ product, handleAddToCart, addedToCart }: ProductListItemProps) {
-    const router = useRouter();
 
     const handleStartNavigation = () => {
         void startRoute({name: product.name, x: product.locationX, y: product.locationY})
-        router.push('/');
+        window.location.href = "/"
     }
 
     return (
