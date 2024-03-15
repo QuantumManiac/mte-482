@@ -106,7 +106,7 @@ class Localization:
         yaw_raw = math.atan2(t3, t4)
         yaw = yaw_raw * 180.0 / math.pi
 
-        return yaw  # 0 -> 180 CCW, 0 -> -180 CW
+        return -yaw  # 0 -> 180 CCW, 0 -> -180 CW
 
     def update_pose(self):
         # Check for camera updates

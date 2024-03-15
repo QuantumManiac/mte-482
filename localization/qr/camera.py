@@ -45,6 +45,8 @@ def process_frame(frame, qr):
     angle = calculate_angle(top_left, top_right)
     pos_x, pos_y = top_left
 
+    # TODO: convert from image frame to global frame
+
     return frame, pos_x, pos_y, angle
 
 
