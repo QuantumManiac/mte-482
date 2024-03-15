@@ -128,8 +128,8 @@ class Localization:
             topic, imu_msg = self.imu_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             imu_msg = json.loads(imu_msg)
 
-            accel_x = imu_msg["accel_x"] + self.accel_x_bias
-            accel_y = imu_msg["accel_y"] + self.accel_y_bias
+            accel_x = imu_msg["accel_x"] - self.accel_x_bias
+            accel_y = imu_msg["accel_y"] - self.accel_y_bias
             print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
 
             # heading calculation
@@ -137,9 +137,9 @@ class Localization:
                 self.heading = self.calculate_imu_heading(imu_msg["quat_real"], imu_msg["quat_i"], imu_msg["quat_j"], imu_msg["quat_k"])
                 if camera_heading is not None:
                     # update the heading correction factor
-                    self.heading_bias = camera_heading - self.heading
+                    self.heading_bias = self.heading - camera_heading
                 
-                self.heading += self.heading_bias  # fix to camera value (global absolute)
+                self.heading -= self.heading_bias  # fix to camera value (global absolute)
 
                 # Maintain heading within specified range
                 if self.heading > 180:
@@ -154,7 +154,7 @@ class Localization:
                 
                 self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
                 self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
-                # print(f"dx: {(0.5*accel_x*dt*dt) + (self.vel_x*dt)} dy: {(0.5*accel_y*dt*dt) + (self.vel_y*dt)}")
+                print(f"dx: {(0.5*accel_x*dt*dt) + (self.vel_x*dt)} dy: {(0.5*accel_y*dt*dt) + (self.vel_y*dt)}")
 
                 self.vel_x += (accel_x*dt)
                 self.vel_y += (accel_y*dt)
