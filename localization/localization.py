@@ -162,7 +162,8 @@ class Localization:
 
         # Publish new localization data
         if (time.time() - self.prev_publish_time) > (1/UPDATE_RATE):
-            self.pose_pub.send_string(f"localization {self.x},{self.y},{self.heading}")
+            heading = 360+self.heading if self.heading < 0 else self.heading  # Convert heading to 0 -> 359 range
+            self.pose_pub.send_string(f"localization {self.x},{self.y},{heading}")
             self.prev_publish_time = time.time()
         
         self.prev_imu_update_time = time.time()
