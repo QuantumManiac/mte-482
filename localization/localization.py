@@ -128,8 +128,9 @@ class Localization:
             topic, imu_msg = self.imu_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             imu_msg = json.loads(imu_msg)
 
-            accel_x = imu_msg["accel_x"]
-            accel_y = imu_msg["accel_y"]
+            accel_x = imu_msg["accel_x"] + self.accel_x_bias
+            accel_y = imu_msg["accel_y"] + self.accel_y_bias
+            print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
 
             # heading calculation
             if (accel_x is not None and accel_y is not None):
@@ -153,9 +154,11 @@ class Localization:
                 
                 self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
                 self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
+                # print(f"dx: {(0.5*accel_x*dt*dt) + (self.vel_x*dt)} dy: {(0.5*accel_y*dt*dt) + (self.vel_y*dt)}")
 
                 self.vel_x += (accel_x*dt)
                 self.vel_y += (accel_y*dt)
+                print(f"Vel_x: {self.vel_x}, Vel_y: {self.vel_y}")
 
         except zmq.Again as e:
             pass
