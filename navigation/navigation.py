@@ -249,16 +249,16 @@ def algorithm(grid, start, end):
 
 	return False, path, path_str, dir
 
-def main():
-	grid = make_grid(40, 600)
-	make_set_barrier(grid)
-	start = grid[10][12]
-	start.make_start()
-	end = grid[27][34]
-	print("go")
-	end.make_end()
+# def main():
+# 	grid = make_grid(40, 600)
+# 	make_set_barrier(grid)
+# 	start = grid[10][12]
+# 	start.make_start()
+# 	end = grid[27][34]
+# 	print("go")
+# 	end.make_end()
 	
-	algorithm(grid, start, end)
-	print("done")
+# 	algorithm(grid, start, end)
+# 	print("done")
 
-main()
+# main()
