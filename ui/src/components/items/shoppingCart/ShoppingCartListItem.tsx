@@ -6,6 +6,8 @@ import ActionButton from "~/components/common/ActionButton";
 
 import { startRoute } from "~/app/actions";
 
+import { useRouter } from "next/navigation";
+
 import clsx from "clsx";
 
 
@@ -16,11 +18,17 @@ interface ShoppingCartListItemProps {
 }
 
 export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, handleToggleDone }: ShoppingCartListItemProps) {
+    const router = useRouter();
     const [checked, setChecked] = useState(cartItem.done);
     
     const handleCheckbox = () => {
         setChecked(!checked);
         handleToggleDone(cartItem);
+    }
+
+    const handleStartNavigation = () => {
+        void startRoute({name: cartItem.name, x: cartItem.locationX, y: cartItem.locationY})
+        router.push('/');
     }
 
     return (
@@ -37,7 +45,7 @@ export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, h
                 <p className="text">{cartItem.locationText}</p>
             </div>
             <div className="flex flex-row">
-                <ActionButton style="bg-orange-300" icon="🗺️" text="Navigate" onClick={() => {void startRoute({name: cartItem.name, x: cartItem.locationX, y: cartItem.locationY})}}/>
+                <ActionButton style="bg-orange-300" icon="🗺️" text="Navigate" onClick={() => handleStartNavigation()}/>
                 <ActionButton style="bg-blue-300" icon="🔍" text="View" onClick={() => {window.location.href = `/items/${cartItem.id}`}}/>
                 <ActionButton style="bg-red-300" icon="❌" text="Remove" onClick={() => handleRemoveFromCart(cartItem.id)}/>
             </div>

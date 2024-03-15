@@ -8,7 +8,7 @@ import { startRoute } from '~/app/actions'
 import ActionButton from '~/components/common/ActionButton'
 
 interface ProductOverviewActionsProps {
-    item?: Product;
+    item: Product;
     handleCartModify: (item: Product) => void;
 }
 
@@ -18,6 +18,11 @@ export default function ProductOverviewActions(
     const router = useRouter()
 
     const [inCart, setInCart] = useState<boolean>(item?.inCart ?? false)
+
+    const handleStartNavigation = () => {
+        void startRoute({name: item.name, x: item.locationX, y: item.locationY})
+        router.push('/');
+    }
 
     const handleCartModifyAndState = async (item: Product) => {
         handleCartModify(item)
@@ -35,7 +40,7 @@ export default function ProductOverviewActions(
             <div className="flex flex-row">
                 <ActionButton style="bg-yellow-300 flex-1" icon="🔙" text="Back" onClick={() => router.back()}/>
                 {inCart ? <ActionButton style="bg-red-300 flex-1" icon="❌" text="Remove from Cart" onClick={() => handleCartModifyAndState(item)}/> : <ActionButton style="bg-green-300 flex-1" icon="➕" text="Add to Cart" onClick={() => handleCartModifyAndState(item)}/>}
-                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To" onClick={() => startRoute({name: item.name, x: item.locationX, y: item.locationY})}/>
+                <ActionButton style="bg-blue-300 flex-1" icon="🗺️" text="Navigate To" onClick={() => handleStartNavigation()}/>
             </div>
         )
     }
