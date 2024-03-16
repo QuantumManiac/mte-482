@@ -1,8 +1,8 @@
 import math
 from queue import PriorityQueue
 
-file_found = 'C:/UW/4B/MTE482/path.txt'
-create_path = 'C:/UW/4B/MTE482/path_created.txt'
+file_found = './path.txt'
+create_path = './path_created.txt'
 
 item_name = []
 item_location = []
@@ -11,14 +11,13 @@ product_name = ""
 product_location = []
 location_of_cart = []
 
-ROWS = 40
+HEIGHT = 40
+WIDTH = 600
 
 print(item_location)
 # text = data.split('\n')
 # two_d_array = [t.split() for t in text]
 # print(two_d_array[1][1])
-
-WIDTH = 600
 
 class Spot:
 	def __init__(self, row, col, width, total_rows):
@@ -169,13 +168,13 @@ def make_set_barrier(grid):
 	div_rows = [4, 10, 16, 22, 28, 34]
 	div_cols = [6, 23]
 
-	for i in range(ROWS):
+	for i in range(HEIGHT):
 		for j in range(frozen1y):
 			spot = grid[i][j]
 			spot.make_barrier()
 
 	for i in range(frozen2x):
-		for j in range(ROWS):
+		for j in range(HEIGHT):
 			spot = grid[i][j]
 			spot.make_barrier()
 		
