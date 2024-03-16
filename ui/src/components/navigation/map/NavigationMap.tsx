@@ -10,8 +10,16 @@ interface NavigationMapProps {
 
 export default function NavigationMap({navigationState, cartItems}: NavigationMapProps) {
     const displayDest = navigationState.state as NavState == NavState.NAVIGATING && navigationState.destX && navigationState.destY
+    const mapStyle = {
+        backgroundImage: "url('/img/map.png')",
+        backgroundSize: "100% 100%",
+        backgroundRepeat: "no-repeat",
+        height: '100%',
+        width: '100%',
+        flex: 1,
+  };
     return (
-        <div className="flex-1 h-full w-full bg-[url('/img/map.png')] bg-cover bg-center ">
+        <div style={mapStyle}>
             <CartMarker x={navigationState.currentX} y={navigationState.currentY} heading={navigationState.heading}/>
             {displayDest && <MapMarker x={navigationState.destX!} y={navigationState.destY!} icon="🏁" tooltipText={navigationState.destName} />}
             {cartItems.map((item, index) => {
