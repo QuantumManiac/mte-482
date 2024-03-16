@@ -160,12 +160,25 @@ def print_path(came_from, next_points, current):
 		return path_str, path, dir
 
 def make_set_barrier(grid):
-	num_shelves_x = 4
+	frozen1y = 3
+	frozen2x = 2
+	num_shelves_x = 6
 	num_shelves_y = 2
-	length_x = 2
-	length_y = 12
-	div_rows = [7, 15, 23, 31]
-	div_cols = [6, 20]
+	length_x = 4
+	length_y = 14
+	div_rows = [4, 10, 16, 22, 28, 34]
+	div_cols = [6, 23]
+
+	for i in range(ROWS):
+		for j in range(frozen1y):
+			spot = grid[i][j]
+			spot.make_barrier()
+
+	for i in range(frozen2x):
+		for j in range(ROWS):
+			spot = grid[i][j]
+			spot.make_barrier()
+		
 
 	for i in range(num_shelves_x):
 		for j in range(num_shelves_y):

@@ -10,7 +10,9 @@ GRID = navigation.make_grid(40, 600)
 navigation.make_set_barrier(GRID)
 path = []
 dir = []
-SCALE = 0.5
+SCALE_X = 0.5
+SCALE_Y = 1
+
 
 # States that the navigation system can be in
 class NavState(enum.Enum):
@@ -27,6 +29,10 @@ class NavMessages(enum.Enum):
     NEW_POSTION = 'new_position' # Position Updated (send new distance to next turn)
     MAKE_TURN = 'make_turn' # Make a turn
     ARRIVED = 'arrived' # Arrived at destination
+
+def dist_calc(curr_x, curr_y, next_x, next_y):
+    return abs(curr_x*SCALE_X - next_x*SCALE_X) + abs(curr_y*SCALE_Y - next_y*SCALE_Y)
+
 
 # Update the current position of the cart to the database
 def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
@@ -56,7 +62,7 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     if complete:
         next_step = dir[0]
         to_next = [(path[0].col), (path[0].row)]
-        dist_to_next = navigation.h(to_next, start) * SCALE
+        dist_to_next = dist_calc(start_x, start_y, path[0].col, path[0].row)
         if start_x > path[0].col:
             heading = 180
         elif start_y < path[0].row:
@@ -94,7 +100,7 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
     curr_pos = [(currentX), (currentY)]
     next_turn = [(path[0].col), (path[0].row)]
     recalculate = to_recalculate(curr_pos, next_turn)
-    dist_to_next = navigation.h(curr_pos, next_turn) * SCALE
+    dist_to_next = dist_calc(currentX, currentY, path[0].col, path[0].row)
 
     if (currentX, currentY == int(state.destX), int(state.destY)):
         notification = NavMessages.ARRIVED
@@ -107,7 +113,7 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
         dir.pop(0)
         curr_pos = [path[0].col, path[0].row]
         path.pop(0)
-        dist_to_next = navigation.h(curr_pos, next_turn) * SCALE
+        dist_to_next = dist_calc(currentX, currentY, path[0].col, path[0].row)
         notification = NavMessages.MAKE_TURN
 
     if currentX > path[0].col:
