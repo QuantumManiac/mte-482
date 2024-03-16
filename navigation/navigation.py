@@ -1,277 +1,188 @@
-import math
-from queue import PriorityQueue
+from db import NavigationState, init_session
+import enum
+from time import sleep
+import zmq
+from sqlalchemy.orm.session import Session
+import navigation_old as navigation
 
-file_found = 'C:/UW/4B/MTE482/path.txt'
-create_path = 'C:/UW/4B/MTE482/path_created.txt'
+GRID = navigation.make_grid(40, 600)
+navigation.make_set_barrier(GRID)
+path = []
+dir = []
+SCALE_X = 0.5
+SCALE_Y = 1
 
-item_name = []
-item_location = []
 
-product_name = ""
-product_location = []
-location_of_cart = []
+# States that the navigation system can be in
+class NavState(enum.Enum):
+    IDLE = 'idle' # Not currently navigating
+    START_NAV = 'start_nav' # Pending start of navigation
+    NAVIGATING = 'navigating' # Currently navigating to a destination
+    PENDING_CANCEL = 'pending_cancel' # Pending cancellation of navigation
 
-ROWS = 40
+# Messages to be sent to the UI
+class NavMessages(enum.Enum):
+    START_NAV = 'start_nav' # Navigation started to a new destination
+    CANCELLED = 'cancelled' # Navigation was cancelled
+    RECALCULATED = 'recalculated' # Route recalculated
+    NEW_POSTION = 'new_position' # Position Updated (send new distance to next turn)
+    MAKE_TURN = 'make_turn' # Make a turn
+    ARRIVED = 'arrived' # Arrived at destination
 
-print(item_location)
-# text = data.split('\n')
-# two_d_array = [t.split() for t in text]
-# print(two_d_array[1][1])
+def dist_calc(curr_x, curr_y, next_x, next_y):
+    return abs(curr_x*SCALE_X - next_x*SCALE_X) + abs(curr_y*SCALE_Y - next_y*SCALE_Y)
 
-WIDTH = 600
 
-class Spot:
-	def __init__(self, row, col, width, total_rows):
-		self.row = row
-		self.col = col
-		self.x = row * width
-		self.y = col * width
-		self.barrier = False
-		self.start = False
-		self.end = False
-		self.open = False
-		self.closed = False
-		self.neighbors = []
-		self.width = width
-		self.total_rows = total_rows
+# Update the current position of the cart to the database
+def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
+    try:
+        _, msg = zmq_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
+        x, y, heading = msg.split(',')
+        with session.begin():
+            session.query(NavigationState).filter(NavigationState.id == 0).update({NavigationState.currentX: x, NavigationState.currentY: y, NavigationState.heading: heading})
+    except zmq.error.ZMQError:
+        pass     
+    
+def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
+    # TODO Calculate route based on current position and destination
+    next_step = ''
+    dist_to_next = 0
+    heading = 0
+    start_x, start_y, end_x, end_y = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY))
+    start = GRID[start_x][start_y]
+    start.make_start()
+    end = GRID[end_x][end_y]
+    end.make_end()
+    print("start")
+    complete, path, path_str, dir = navigation.algorithm(GRID, start, end)
+    heading = 0
+    # Get the destination from the database
 
-	def get_pos(self):
-		return self.row, self.col
+    if complete:
+        next_step = dir[0]
+        to_next = [(path[0].col), (path[0].row)]
+        dist_to_next = dist_calc(start_x, start_y, path[0].col, path[0].row)
+        if start_x > path[0].col:
+            heading = 180
+        elif start_y < path[0].row:
+            heading = -90
+        elif start_y > path[0].row:
+            heading = 90
 
-	def is_barrier(self):
-		return self.barrier
+    with session.begin():
+        state.state = NavState.NAVIGATING
+        # state.nextStep = 'left'
+        state.nextStep = next_step
+        # state.distToNextStep = 5
+        state.distToNextStep = dist_to_next
+        # state.desiredHeading = 180
+        state.desiredHeading = heading
+        # state.route = ...
+        state.route = path_str
 
-	def is_start(self):
-		return self.start
+    pub.send_string(f'zmq_navigation {NavMessages.START_NAV.value}')
 
-	def is_end(self):
-		return self.end
-	
-	def is_open(self):
-		return self.open
-	
-	def is_closed(self):
-		return self.closed
+def to_recalculate(curr, next):
+    if navigation.pythagorean(curr, next) > navigation.h(curr, next):
+        return True
+    
+    return False
 
-	def make_start(self):
-		self.start = True
-		
-	def make_barrier(self):
-		self.barrier = True
 
-	def make_end(self):
-		self.end = True
+def update_navigation_state(session: Session, state: NavigationState, pub: zmq.Socket):
+    currentX, currentY, end_x, end_y, heading = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY)), int(round(state.heading))
+    # TODO Update state based on current position and route
 
-	def make_open(self):
-		self.open = True
-	
-	def make_closed(self):
-		self.closed = True
+    notification = NavMessages.NEW_POSTION # Or NavMessages.MAKE_TURN or NavMessages.ARRIVED, NavMessages.RECALCULATED implement this
+    
+    heading = 0
+    curr_pos = [(currentX), (currentY)]
+    next_turn = [(path[0].col), (path[0].row)]
+    recalculate = to_recalculate(curr_pos, next_turn)
+    dist_to_next = dist_calc(currentX, currentY, path[0].col, path[0].row)
 
-	def update_neighbors(self, grid):
-		self.neighbors = []
-		if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier(): # DOWN
-			self.neighbors.append(grid[self.row + 1][self.col])
+    if (currentX, currentY == int(state.destX), int(state.destY)):
+        notification = NavMessages.ARRIVED
+    elif recalculate:
+        start = GRID[currentX][currentY]
+        end = GRID[end_x][end_y]
+        complete, path, path_str, dir = navigation.algorithm(GRID, start, end)
+        notification = NavMessages.RECALCULATED
+    elif dist_to_next <= 2: #may pose an issue if the user turns too quickly:,)
+        dir.pop(0)
+        curr_pos = [path[0].col, path[0].row]
+        path.pop(0)
+        dist_to_next = dist_calc(currentX, currentY, path[0].col, path[0].row)
+        notification = NavMessages.MAKE_TURN
 
-		if self.row > 0 and not grid[self.row - 1][self.col].is_barrier(): # UP
-			self.neighbors.append(grid[self.row - 1][self.col])
+    if currentX > path[0].col:
+        heading = 180
+    elif currentY < path[0].row:
+        heading = -90
+    elif currentY > path[0].row:
+        heading = 90
 
-		if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier(): # RIGHT
-			self.neighbors.append(grid[self.row][self.col + 1])
+    with session.begin():
+        # TODO Update State
+        # state.nextStep = 'left'
+        state.nextStep = dir[0]
+        # state.distToNextStep = 5
+        state.distToNextStep = dist_to_next
+        # state.desiredHeading = 5
+        state.desiredHeading = heading
+        # Also change the route if recalculated
+        # state.route = ...
+        if notification == NavMessages.RECALCULATED:
+            state.route = path_str
+        pass
 
-		if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): # LEFT
-			self.neighbors.append(grid[self.row][self.col - 1])
+    pub.send_string(f'zmq_navigation {notification.value}')
 
-	def __lt__(self, other):
-		return False
+def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket):
+    with session.begin():
+        state.state = NavState.IDLE
+        state.routeTo = None
+        state.route = None
+        state.nextStep = None
+        state.distToNextStep = None
+        
+    pub.send_string(f'zmq_navigation {NavMessages.CANCELLED}')
 
-def h(p1, p2):
-	x1, y1 = p1
-	x2, y2 = p2
-	return abs(x1 - x2) + abs(y1 - y2)
+def tick(session: Session, pub: zmq.Socket):
+    with session.begin():
+        state = session.query(NavigationState).filter(NavigationState.id == 0).first()
 
-def pythagorean(p1, p2):
-	x1, y1 = p1
-	x2, y2 = p2
-	return math.sqrt((x1-x2)**2 + (y1-y2)**2)
+    match state.state:
+        case NavState.IDLE:
+            return
+        case NavState.START_NAV:
+            calculate_route(session, state, pub)
+        case NavState.NAVIGATING:
+            update_navigation_state(session, state, pub)
+        case NavState.PENDING_CANCEL:
+            cancel_navigation(session, pub)
 
-def create_string(prev_spot, curr_spot, next_spot):
-    v1x = curr_spot.row - prev_spot.row
-    v1y = curr_spot.col - prev_spot.col
-    v2x = next_spot.row - curr_spot.row
-    v2y = next_spot.col - curr_spot.col
-    dir = ""
-    turned = False
-    if (v1x*v2y - v1y*v2x) > 0:
-        dir = "Left"
-        turned = True
-    elif (v1x*v2y - v1y*v2x) < 0:
-        dir = "Right"
-        turned = True
+def main():    
+    context = zmq.Context()
+    session = init_session()
+    pub = context.socket(zmq.PUB)
+    pub.connect("tcp://127.0.0.1:5556")
 
-    directions = f"Straight until: ({curr_spot.row}, {curr_spot.col}), Turn: {dir} "
-    # curr_str = f"Next: ({prev_spot.row}, {prev_spot.col}), Curr: ({curr_spot.row}, {curr_spot.col}), Prev: ({next_spot.row}, {next_spot.col}), ({dir})"
-    # print(curr_str)
-    return curr_spot, directions, dir, turned
+    sub: zmq.Socket = context.socket(zmq.SUB)
+    sub.setsockopt(zmq.CONFLATE, 1)
+    sub.connect("tcp://127.0.0.1:5555")
+    sub.setsockopt(zmq.SUBSCRIBE, b"zmq_localization")
 
-def print_path(came_from, next_points, current):
-	path_str = ""
-	path = []
-	turn_dir = []
-	temp = ""
-	prev_spot = current
-	count = 0
-	dir = []
-	max = len(next_points) - 1
-	with open(create_path, 'w') as file:
-		while current in next_points:
-			if count >= 1:
-				prev_spot = current
-			
-			current = came_from[current]
-			try:
-				next_spot = next_points[current]
-			except:
-				print("end")
-			if count == 0:
-					arrived = f"({current.row}, {current.col}) Arrived!"
-					arrival = [(current.row), (current.col)]
-					path.append(arrival)
-					path_str = arrived
-					turn_dir.append("Arrived!")
+    # Create initial navigation state
+    with session.begin():
+        session.query(NavigationState).delete()
+        session.add(NavigationState(id=0, state=NavState.IDLE))
 
-			# current.make_path()
-			if count >= 1 and count < max:
-				temp, temp_str, dir, turned = create_string(prev_spot, current, next_spot)
-				# print(temp.row)
-				# print(temp.col)
-				# file.write(temp)
-				if turned:
-					print(turned)
-					temp_arr = [(temp.row), (temp.col)]
-					path_str = temp_str + path_str
-					path.insert(0, temp)
-					turn_dir.insert(0, dir)
-			count += 1
-			# formatted = temp
-		# for i in range(len(path_str)):
-		# 	format_str = f"{path_str} \n"
-		file.write(path_str)
-		return path_str, path, dir
+    # Update state every 300ms
+    while True:
+        update_localization_state_to_db(session, sub)
+        tick(session, pub)
+        sleep(0.3)
 
-def make_set_barrier(grid):
-	frozen1y = 3
-	frozen2x = 2
-	num_shelves_x = 6
-	num_shelves_y = 2
-	length_x = 4
-	length_y = 14
-	div_rows = [4, 10, 16, 22, 28, 34]
-	div_cols = [6, 23]
-
-	for i in range(ROWS):
-		for j in range(frozen1y):
-			spot = grid[i][j]
-			spot.make_barrier()
-
-	for i in range(frozen2x):
-		for j in range(ROWS):
-			spot = grid[i][j]
-			spot.make_barrier()
-		
-
-	for i in range(num_shelves_x):
-		for j in range(num_shelves_y):
-			for k in range(length_x):
-				for l in range(length_y):
-					x_coord = div_rows[i]+k
-					y_coord = div_cols[j]+l
-					spot = grid[x_coord][y_coord]
-					spot.make_barrier()
-					
-def make_grid(rows, width):
-	grid = []
-	gap = width // rows
-	for i in range(rows):
-		grid.append([])
-		for j in range(rows):
-			spot = Spot(i, j, gap, rows)
-			grid[i].append(spot)
-
-	return grid
-
-def reconstruct_path(came_from, current):
-	with open(file_found, 'w') as file:
-		while current in came_from:	
-			current = came_from[current]
-			# current.make_path()
-			formatted = f"{current.row} {current.col}\n"
-			file.write(formatted)
-			
-def algorithm(grid, start, end):
-	for row in grid:
-		for spot in row:
-			spot.update_neighbors(grid)
-	count = 0
-	open_set = PriorityQueue() #open set
-	open_set.put((0, count, start)) # put start node in open set
-	came_from = {} # to keep track of what nodes came from where
-	g_score = {spot: float("inf") for row in grid for spot in row} # keeps track of the current shortest distance to get from the start node to the current node
-	g_score[start] = 0
-	f_score = {spot: float("inf") for row in grid for spot in row} # keeps track of the predicted distance from this node to the end node
-	f_score[start] = h(start.get_pos(), end.get_pos()) # initial is the heuristic from start to end
-	path = []
-	path_str = ""
-	dir = []
-
-	open_set_hash = {start} #help to see what is in the open set
-
-	while not open_set.empty():
-
-		current = open_set.get()[2] #gets node associated with min f score
-		open_set_hash.remove(current) # remove from open set
-
-		if current == end:
-			print("equals")
-			next_points = came_from.copy()
-			next_points.popitem()
-			reconstruct_path(came_from, end)
-			path_str, path, dir = print_path(came_from, next_points, end)
-			end.make_end()
-			print("ended")
-			return True, path, path_str, dir
-
-		for neighbor in current.neighbors:
-			temp_g_score = g_score[current] + 1
-			print(temp_g_score)
-
-			if temp_g_score < g_score[neighbor]: # if g score is better than what is found in the table
-				# update
-				came_from[neighbor] = current
-				g_score[neighbor] = temp_g_score
-				f_score[neighbor] = temp_g_score + h(neighbor.get_pos(), end.get_pos())
-				# add to open set
-				if neighbor not in open_set_hash:
-					count += 1
-					open_set.put((f_score[neighbor], count, neighbor))
-					open_set_hash.add(neighbor)
-					neighbor.make_open()
-
-		if current != start:
-			current.make_closed()
-
-	return False, path, path_str, dir
-
-# def main():
-# 	grid = make_grid(40, 600)
-# 	make_set_barrier(grid)
-# 	start = grid[10][12]
-# 	start.make_start()
-# 	end = grid[27][34]
-# 	print("go")
-# 	end.make_end()
-	
-# 	algorithm(grid, start, end)
-# 	print("done")
-
-# main()
+if __name__ == "__main__":
+    main()
