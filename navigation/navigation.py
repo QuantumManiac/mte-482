@@ -11,7 +11,7 @@ product_name = ""
 product_location = []
 location_of_cart = []
 
-ROWS = 80
+ROWS = 81
 COLS = 40
 
 print(item_location)
@@ -19,7 +19,7 @@ print(item_location)
 # two_d_array = [t.split() for t in text]
 # print(two_d_array[1][1])
 
-WIDTH = 1200
+WIDTH = 1215
 HEIGHT = 600
 
 class Spot:
@@ -178,13 +178,13 @@ def print_path(came_from, next_points, current):
 def make_set_barrier(grid):
     frozen1y = 1
     frozen2x = 1
-    num_shelves_x = 25
+    num_shelves_x = 26
     num_shelves_y = 2
     length_x = 2
     length_y = 17
-    div_rows = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74]
+    div_rows = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77]
     div_cols = [2, 21]
-    LAST_ROW = 77
+    # LAST_ROW = 77
 
     for i in range(ROWS):
         for j in range(frozen1y):
@@ -215,11 +215,11 @@ def make_set_barrier(grid):
                     spot = grid[x_coord][y_coord]
                     spot.make_barrier()
 					
-    for i in range(num_shelves_y):
-        for j in range(length_y):
-            y_coord = div_cols[i]+j
-            spot = grid[LAST_ROW][y_coord]
-            spot.make_barrier()	
+    # for i in range(num_shelves_y):
+    #     for j in range(length_y):
+    #         y_coord = div_cols[i]+j
+    #         spot = grid[LAST_ROW][y_coord]
+    #         spot.make_barrier()	
 					
 def make_grid(rows, cols, width, height):
     grid = []
@@ -230,7 +230,7 @@ def make_grid(rows, cols, width, height):
         for j in range(cols):
             spot = Spot(i, j, gap_x, gap_y, rows, cols)
             grid[i].append(spot)
-			
+
     return grid
 
 def reconstruct_path(came_from, current):
