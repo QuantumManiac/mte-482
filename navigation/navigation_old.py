@@ -11,20 +11,23 @@ product_name = ""
 product_location = []
 location_of_cart = []
 
-HEIGHT = 40
-WIDTH = 600
+ROWS = 81
+COLS = 40
 
 print(item_location)
 # text = data.split('\n')
 # two_d_array = [t.split() for t in text]
 # print(two_d_array[1][1])
 
+WIDTH = 1215
+HEIGHT = 600
+
 class Spot:
-	def __init__(self, row, col, width, total_rows):
+	def __init__(self, row, col, width, height, total_rows, total_cols):
 		self.row = row
 		self.col = col
 		self.x = row * width
-		self.y = col * width
+		self.y = col * height
 		self.barrier = False
 		self.start = False
 		self.end = False
@@ -32,7 +35,9 @@ class Spot:
 		self.closed = False
 		self.neighbors = []
 		self.width = width
+		self.height = height
 		self.total_rows = total_rows
+		self.total_cols = total_cols
 
 	def get_pos(self):
 		return self.row, self.col
@@ -75,7 +80,7 @@ class Spot:
 		if self.row > 0 and not grid[self.row - 1][self.col].is_barrier(): # UP
 			self.neighbors.append(grid[self.row - 1][self.col])
 
-		if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier(): # RIGHT
+		if self.col < self.total_cols - 1 and not grid[self.row][self.col + 1].is_barrier(): # RIGHT
 			self.neighbors.append(grid[self.row][self.col + 1])
 
 		if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): # LEFT
@@ -113,7 +118,19 @@ def create_string(prev_spot, curr_spot, next_spot):
     # print(curr_str)
     return curr_spot, directions, dir, turned
 
+def des_loc(last, second_last):
+	if (last.row > second_last.row or last.col < second_last.col):
+		return "right"
+	else:
+		return "left"
+
 def print_path(came_from, next_points, current):
+	to_aisle = ""
+	count = 0
+	for i in came_from:
+		if count == 0:
+			to_aisle = des_loc(came_from[i], next_points[i])
+			count += 1
 	path_str = ""
 	path = []
 	turn_dir = []
@@ -133,7 +150,7 @@ def print_path(came_from, next_points, current):
 			except:
 				print("end")
 			if count == 0:
-					arrived = f"({current.row}, {current.col}) Arrived!"
+					arrived = f"arrive_{to_aisle}"
 					arrival = [(current.row), (current.col)]
 					path.append(arrival)
 					path_str = arrived
@@ -159,45 +176,62 @@ def print_path(came_from, next_points, current):
 		return path_str, path, dir
 
 def make_set_barrier(grid):
-	frozen1y = 3
-	frozen2x = 2
-	num_shelves_x = 6
-	num_shelves_y = 2
-	length_x = 4
-	length_y = 14
-	div_rows = [4, 10, 16, 22, 28, 34]
-	div_cols = [6, 23]
+    frozen1y = 1
+    frozen2x = 1
+    num_shelves_x = 26
+    num_shelves_y = 2
+    length_x = 2
+    length_y = 17
+    div_rows = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77]
+    div_cols = [2, 21]
+    # LAST_ROW = 77
 
-	for i in range(HEIGHT):
-		for j in range(frozen1y):
-			spot = grid[i][j]
-			spot.make_barrier()
+    for i in range(ROWS):
+        for j in range(frozen1y):
+            spot = grid[i][j]
+            spot.make_barrier()
 
-	for i in range(frozen2x):
-		for j in range(HEIGHT):
-			spot = grid[i][j]
-			spot.make_barrier()
+    for i in range(ROWS):
+        for j in range(frozen1y):
+            spot = grid[i][COLS - 1 - j]
+            spot.make_barrier()
+
+    for i in range(frozen2x):
+        for j in range(COLS):
+            spot = grid[i][j]
+            spot.make_barrier()
+
+    for i in range(frozen2x):
+        for j in range(COLS):
+            spot = grid[ROWS - 1 - i][j]
+            spot.make_barrier()
 		
-
-	for i in range(num_shelves_x):
-		for j in range(num_shelves_y):
-			for k in range(length_x):
-				for l in range(length_y):
-					x_coord = div_rows[i]+k
-					y_coord = div_cols[j]+l
-					spot = grid[x_coord][y_coord]
-					spot.make_barrier()
+    for i in range(num_shelves_x):
+        for j in range(num_shelves_y):
+            for k in range(length_x):
+                for l in range(length_y):
+                    x_coord = div_rows[i]+k
+                    y_coord = div_cols[j]+l
+                    spot = grid[x_coord][y_coord]
+                    spot.make_barrier()
 					
-def make_grid(rows, width):
-	grid = []
-	gap = width // rows
-	for i in range(rows):
-		grid.append([])
-		for j in range(rows):
-			spot = Spot(i, j, gap, rows)
-			grid[i].append(spot)
+    # for i in range(num_shelves_y):
+    #     for j in range(length_y):
+    #         y_coord = div_cols[i]+j
+    #         spot = grid[LAST_ROW][y_coord]
+    #         spot.make_barrier()	
+					
+def make_grid(rows, cols, width, height):
+    grid = []
+    gap_x = width // rows
+    gap_y = height // cols
+    for i in range(rows):
+        grid.append([])
+        for j in range(cols):
+            spot = Spot(i, j, gap_x, gap_y, rows, cols)
+            grid[i].append(spot)
 
-	return grid
+    return grid
 
 def reconstruct_path(came_from, current):
 	with open(file_found, 'w') as file:
@@ -260,3 +294,17 @@ def algorithm(grid, start, end):
 			current.make_closed()
 
 	return False, path, path_str, dir
+
+# def main():
+# 	grid = make_grid(40, 600)
+# 	make_set_barrier(grid)
+# 	start = grid[10][12]
+# 	start.make_start()
+# 	end = grid[27][34]
+# 	print("go")
+# 	end.make_end()
+	
+# 	algorithm(grid, start, end)
+# 	print("done")
+
+# main()

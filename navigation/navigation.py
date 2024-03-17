@@ -5,12 +5,17 @@ import zmq
 from sqlalchemy.orm.session import Session
 import navigation_old as navigation
 
-GRID = navigation.make_grid(40, 600)
+ROWS = 80
+COLS = 40
+WIDTH = 1200
+HEIGHT = 600
+
+GRID = navigation.make_grid(ROWS, COLS, WIDTH, HEIGHT)
 navigation.make_set_barrier(GRID)
 path = []
 dir = []
 SCALE_X = 0.5
-SCALE_Y = 1
+SCALE_Y = 0.5
 
 
 # States that the navigation system can be in
