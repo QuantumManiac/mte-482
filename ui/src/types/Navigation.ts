@@ -13,3 +13,8 @@ export enum NavState {
     NAVIGATING = 'navigating',
     PENDING_CANCEL = 'pending_cancel'
 }
+
+export interface Coordinate {
+    x: number
+    y: number
+}

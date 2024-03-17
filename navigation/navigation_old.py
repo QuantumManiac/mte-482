@@ -16,9 +16,6 @@ print(item_location)
 # two_d_array = [t.split() for t in text]
 # print(two_d_array[1][1])
 
-WIDTH = 1215
-HEIGHT = 600
-
 class Spot:
     def __init__(self, row, col, width, height, total_rows, total_cols):
         self.row = row
@@ -220,14 +217,12 @@ def make_set_barrier(grid):
     #         spot = grid[LAST_ROW][y_coord]
     #         spot.make_barrier()	
 					
-def make_grid(rows, cols, width, height):
+def make_grid(rows, cols, tile_width, tile_height):
     grid = []
-    gap_x = width / rows
-    gap_y = height / cols
     for i in range(rows):
         row = []
         for j in range(cols):
-            spot = Spot(i, j, gap_x, gap_y, rows, cols)
+            spot = Spot(i, j, tile_width, tile_height, rows, cols)
             row.append(spot)
         grid.append(row)
     return grid

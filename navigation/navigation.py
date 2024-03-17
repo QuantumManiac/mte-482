@@ -5,14 +5,12 @@ import zmq
 from sqlalchemy.orm.session import Session
 import navigation_old as navigation
 
-ROWS = 21
-COLS = 39
-WIDTH = 1200
-HEIGHT = 600
-SCALE_X = 0.5
-SCALE_Y = 0.5
+TILES_X = 21
+TILES_Y = 39
+SCALE_X = 1
+SCALE_Y = 1
 
-GRID = navigation.make_grid(ROWS, COLS, WIDTH, HEIGHT)
+GRID = navigation.make_grid(TILES_X, TILES_Y, SCALE_X, SCALE_Y)
 navigation.make_set_barrier(GRID)
 path = []
 dir = []
@@ -37,7 +35,6 @@ class NavMessages(enum.Enum):
 def dist_calc(curr_x, curr_y, next_x, next_y):
     return abs(curr_x*SCALE_X - next_x*SCALE_X) + abs(curr_y*SCALE_Y - next_y*SCALE_Y)
 
-
 # Update the current position of the cart to the database
 def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
     try:
@@ -50,7 +47,6 @@ def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
         pass     
     
 def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
-    # TODO Calculate route based on current position and destination
     next_step = ''
     dist_to_next = 0
     heading = 0
@@ -62,11 +58,9 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     print("start")
     complete, path, path_str, dir = navigation.algorithm(GRID, start, end)
     heading = 0
-    # Get the destination from the database
 
     if complete:
         next_step = dir[0]
-        to_next = [(path[0].col), (path[0].row)]
         dist_to_next = dist_calc(start_x, start_y, path[0].col, path[0].row)
         if start_x > path[0].col:
             heading = 180
@@ -152,15 +146,17 @@ def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket)
 
 def tick(session: Session, pub: zmq.Socket):
     state = session.query(NavigationState).filter(NavigationState.id == 0).first()
+    session.commit()
 
     match state.state:
-        case NavState.IDLE:
+        case NavState.IDLE.value:
             return
-        case NavState.START_NAV:
+        case NavState.START_NAV.value:
+            print('start')
             calculate_route(session, state, pub)
-        case NavState.NAVIGATING:
+        case NavState.NAVIGATING.value:
             update_navigation_state(session, state, pub)
-        case NavState.PENDING_CANCEL:
+        case NavState.PENDING_CANCEL.value:
             cancel_navigation(session, pub)
 
 def main():    

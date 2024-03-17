@@ -1,10 +1,14 @@
 import navigation
 import matplotlib.pyplot as plt 
 
-array = [[cell.barrier for cell in row] for row in navigation.GRID]
-# Do the same as above but transposed
-array = list(map(list, zip(*array)))
+array = []
+for x in range(len(navigation.GRID)):
+    row = []
+    for y in range(len(navigation.GRID[x])):
+        row.append(navigation.GRID[x][y].barrier)
+    array.append(row)
 
+print(array)
 
 # Calculate the number of rows and columns
 num_rows = len(array)
