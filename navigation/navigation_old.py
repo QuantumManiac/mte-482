@@ -1,5 +1,11 @@
 import math
 from queue import PriorityQueue
+from typing import TypedDict
+
+
+class Point(TypedDict):
+    x: int
+    y: int
 
 file_found = './path.txt'
 create_path = './path_created.txt'
@@ -11,17 +17,12 @@ product_name = ""
 product_location = []
 location_of_cart = []
 
-print(item_location)
-# text = data.split('\n')
-# two_d_array = [t.split() for t in text]
-# print(two_d_array[1][1])
-
 class Spot:
-    def __init__(self, row, col, width, height, total_rows, total_cols):
-        self.row = row
-        self.col = col
-        self.x = row * width
-        self.y = col * height
+    def __init__(self, tile_x, tile_y, width, height, total_rows, total_cols):
+        self.row = tile_x
+        self.col = tile_y
+        self.x = tile_x * width
+        self.y = tile_y * height
         self.barrier = False
         self.start = False
         self.end = False
@@ -249,12 +250,10 @@ def algorithm(grid, start, end):
     f_score[start] = h(start.get_pos(), end.get_pos()) # initial is the heuristic from start to end
     path = []
     path_str = ""
-    dir = []
+    directions = []
 
     open_set_hash = {start} #help to see what is in the open set
-
     while not open_set.empty():
-
         current = open_set.get()[2] #gets node associated with min f score
         open_set_hash.remove(current) # remove from open set
 
@@ -263,10 +262,10 @@ def algorithm(grid, start, end):
             next_points = came_from.copy()
             next_points.popitem()
             reconstruct_path(came_from, end)
-            path_str, path, dir = print_path(came_from, next_points, end)
+            path_str, path, directions = print_path(came_from, next_points, end)
             end.make_end()
             print("ended")
-            return True, path, path_str, dir
+            return True, path, path_str, directions
 
         for neighbor in current.neighbors:
             temp_g_score = g_score[current] + 1
@@ -287,7 +286,7 @@ def algorithm(grid, start, end):
         if current != start:
             current.make_closed()
 
-    return False, path, path_str, dir
+    return False, path, path_str, directions
 
 # def main():
 # 	grid = make_grid(40, 600)
