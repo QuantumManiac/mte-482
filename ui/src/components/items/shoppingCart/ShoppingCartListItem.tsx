@@ -6,8 +6,6 @@ import ActionButton from "~/components/common/ActionButton";
 
 import { startRoute } from "~/app/actions";
 
-import { useRouter } from "next/navigation";
-
 import clsx from "clsx";
 
 
@@ -18,7 +16,6 @@ interface ShoppingCartListItemProps {
 }
 
 export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, handleToggleDone }: ShoppingCartListItemProps) {
-    const router = useRouter();
     const [checked, setChecked] = useState(cartItem.done);
     
     const handleCheckbox = () => {
@@ -28,7 +25,7 @@ export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, h
 
     const handleStartNavigation = () => {
         void startRoute({name: cartItem.name, x: cartItem.locationX, y: cartItem.locationY})
-        router.push('/');
+        window.location.href = "/"
     }
 
     return (

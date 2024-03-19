@@ -1,14 +1,15 @@
+import { type Coordinate } from "~/types/Navigation";
+
 interface CartMarkerProps {
-    x: number;
-    y: number;
+    pos: Coordinate
     heading: number
 }
 
-export default function CartMarker({x, y, heading}: CartMarkerProps) {
+export default function CartMarker({pos, heading}: CartMarkerProps) {
   const style = {
-    transform: `rotate(${heading}deg)`,
-    left: `${x}px`,
-    top: `${y}px`,
+    transform: `translate(-50%, -50%) rotate(${heading}deg)`,
+    left: `${pos.x}px`,
+    top: `${pos.y}px`,
   };
 
   return (
@@ -17,7 +18,7 @@ export default function CartMarker({x, y, heading}: CartMarkerProps) {
       style={style} // Applying dynamic styles for rotation and positioning
     >
       <span
-        className="text-3xl" // Using Tailwind's text size scale
+        className="text-2xl" // Using Tailwind's text size scale
       >
         ⏫
       </span>

@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { type Coordinate } from '~/types/Navigation';
 
 interface MapMarkerProps {
-    x: number;
-    y: number;
+    pos: Coordinate;
     icon: string;
     tooltipText?: string | null;
 }
 
-export default function MapMarker({x, y, icon, tooltipText}: MapMarkerProps) {
+export default function MapMarker({pos, icon, tooltipText}: MapMarkerProps) {
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const pointRef = useRef<HTMLDivElement>(null);
 
@@ -29,8 +29,9 @@ export default function MapMarker({x, y, icon, tooltipText}: MapMarkerProps) {
   }, []);
 
   const style = {
-    left: `${x}px`,
-    top: `${y}px`,
+    left: `${pos.x}px`,
+    top: `${pos.y}px`,
+    transform: `translate(-50%, -50%)`, // Applying rotation
   };
 
   return (
@@ -40,7 +41,7 @@ export default function MapMarker({x, y, icon, tooltipText}: MapMarkerProps) {
       ref={pointRef}
     >
       <span
-        className="text-3xl" // Using Tailwind's text size scale
+        className="text-2xl" // Using Tailwind's text size scale
         onClick={toggleTooltip}
       >
         {icon}

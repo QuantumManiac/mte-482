@@ -12,13 +12,13 @@ interface NavigationInfoBarProps {
 export default function NavigationInfoBar({navigationState, handleCancelRoute}: NavigationInfoBarProps) {
     if (navigationState.state as NavState != NavState.NAVIGATING) {
         return (
-            <div className="flex flex-col items-center justify-center h-20 bg-slate-200">
+            <div className="flex flex-col items-center justify-center h-[4rem] bg-slate-200">
                 <p className="text-2xl font-bold text-slate-600">Currently Not Navigating</p>
             </div>
         )
     } else {
         return (
-            <div className="flex space-x-1 bg-slate-300 h-20">
+            <div className="flex space-x-1 bg-slate-300 h-[5rem]">
                 <div className="flex-1 flex items-center bg-slate-100 h-full">
                     <NavigationDestinationText navigationState={navigationState} />
                 </div>

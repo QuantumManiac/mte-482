@@ -49,6 +49,8 @@ class Localization:
         self.calibrate_imu()
 
     def calibrate_imu(self):
+        print("Waiting for sensor data...")
+        time.sleep(5)
         print("Calibrating IMU ...")
         # determine bias in accelerometer and angle
         CALIBRATION_DURATION = 3
