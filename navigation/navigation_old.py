@@ -1,3 +1,4 @@
+from enum import Enum
 import math
 from queue import PriorityQueue
 from typing import TypedDict
@@ -17,17 +18,21 @@ product_name = ""
 product_location = []
 location_of_cart = []
 
+class state(Enum):
+    EMPTY = 0
+    BARRIER = 1
+    CLOSED = 2
+    OPENED = 3
+    START = 4
+    END = 5
+
 class Spot:
     def __init__(self, tile_x, tile_y, width, height, total_rows, total_cols):
         self.row = tile_x
         self.col = tile_y
         self.x = tile_x * width
         self.y = tile_y * height
-        self.barrier = False
-        self.start = False
-        self.end = False
-        self.open = False
-        self.closed = False
+        self.state = state.EMPTY
         self.neighbors = []
         self.width = width
         self.height = height
@@ -38,34 +43,34 @@ class Spot:
         return self.row, self.col
 
     def is_barrier(self):
-        return self.barrier
+        return self.state == state.BARRIER
 
     def is_start(self):
-        return self.start
+        return self.state == state.START
 
     def is_end(self):
-        return self.end
+        return self.state == state.END
     
     def is_open(self):
-        return self.open
+        return self.state == state.OPENED
     
     def is_closed(self):
-        return self.closed
+        return self.state == state.CLOSED
 
     def make_start(self):
-        self.start = True
+        self.state = state.START
         
     def make_barrier(self):
-        self.barrier = True
+        self.state = state.BARRIER
 
     def make_end(self):
-        self.end = True
+        self.state = state.END
 
     def make_open(self):
-        self.open = True
+        self.state = state.OPENED
     
     def make_closed(self):
-        self.closed = True
+        self.state = state.CLOSED
 
     def update_neighbors(self, grid):
         self.neighbors = []
@@ -113,19 +118,39 @@ def create_string(prev_spot, curr_spot, next_spot):
     # print(curr_str)
     return curr_spot, directions, dir, turned
 
-def des_loc(last, second_last):
-    if (last.row > second_last.row or last.col < second_last.col):
-        return "right"
-    else:
-        return "left"
+def des_loc(last_point, second_last, third_last):
+    v1x = second_last.row - third_last.row
+    v1y = second_last.col - third_last.col
+    v2x = last_point.row - second_last.row
+    v2y = last_point.col - second_last.col
+    direction = ""
+    if (v1x*v2y - v1y*v2x) > 0:
+        direction = "left"
+    elif (v1x*v2y - v1y*v2x) < 0:
+        direction = "right"
+
+    return direction
 
 def print_path(came_from, next_points, current):
     to_aisle = ""
-    count = 0
-    for i in came_from:
-        if count == 0:
-            to_aisle = des_loc(came_from[i], next_points[i])
-            count += 1
+    # count = 0
+    # # chamath pls ignore how bad this is i just need to access the last three points
+    # # this is also coded assuming the user isnt trying to navigate to a point right next to them ... or this wont work 
+    # last_point = current
+    # second_last = current
+    # third_last = current
+    # max = len(next_points) - 1
+    # for i in came_from:
+    #     if count == 0:
+    #         last_point = came_from[i]
+    #         second_last = next_points[i]
+    #         count += 1
+    #     if count == 1:
+    #         third_last = next_points[i]
+    #         count += 1
+    
+    # to_aisle = des_loc(last_point, second_last, third_last)
+
     path_str = ""
     path = []
     turn_dir = []
@@ -133,9 +158,8 @@ def print_path(came_from, next_points, current):
     prev_spot = current
     count = 0
     dir = []
-    max = len(next_points) - 1
     with open(create_path, 'w') as file:
-        while current in next_points:
+        while current in came_from:
             if count >= 1:
                 prev_spot = current
             
@@ -145,14 +169,14 @@ def print_path(came_from, next_points, current):
             except:
                 print("end")
             if count == 0:
-                    arrived = f"arrive_{to_aisle}"
+                    arrived = f"({current.row}, {current.col}) arrive_{to_aisle}"
                     arrival = [(current.row), (current.col)]
                     path.append(arrival)
                     path_str = arrived
                     turn_dir.append("Arrived!")
 
             # current.make_path()
-            if count >= 1 and count < max:
+            if count >= 1:
                 temp, temp_str, dir, turned = create_string(prev_spot, current, next_spot)
                 # print(temp.row)
                 # print(temp.col)
@@ -173,12 +197,12 @@ def print_path(came_from, next_points, current):
 def make_set_barrier(grid):
     frozen1y = 1
     frozen2x = 1
-    num_shelves_x = 6
-    num_shelves_y = 2
-    length_x = 2
-    length_y = 17
-    div_rows = [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35, 38, 41, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77]
-    div_cols = [2, 20]
+    num_shelves_x = 2
+    num_shelves_y = 6
+    length_x = 17
+    length_y = 2
+    div_rows = [2, 19]
+    div_cols = [2, 5, 8, 11, 14, 17]
     # LAST_ROW = 77
 
     num_rows, num_cols = len(grid), len(grid[0])
@@ -255,12 +279,20 @@ def algorithm(grid, start, end):
     open_set_hash = {start} #help to see what is in the open set
     while not open_set.empty():
         current = open_set.get()[2] #gets node associated with min f score
+        
         open_set_hash.remove(current) # remove from open set
-
+        formatted = f"current:row {current.row}, current:col {current.col}"
+        print(formatted)
         if current == end:
             print("equals")
             next_points = came_from.copy()
+            # for x in came_from:
+            #     formatted = f"came_from:row {x.row}, came_from:col {x.col}"
+            #     print(formatted)
             next_points.popitem()
+            # for x in next_points:
+            #     formatted = f"next:row {x.row}, next:col {x.col}"
+            #     print(formatted)
             reconstruct_path(came_from, end)
             path_str, path, directions = print_path(came_from, next_points, end)
             end.make_end()
@@ -268,8 +300,9 @@ def algorithm(grid, start, end):
             return True, path, path_str, directions
 
         for neighbor in current.neighbors:
+            # print("neighbours")
             temp_g_score = g_score[current] + 1
-            print(temp_g_score)
+            # print(temp_g_score)
 
             if temp_g_score < g_score[neighbor]: # if g score is better than what is found in the table
                 # update
@@ -289,11 +322,11 @@ def algorithm(grid, start, end):
     return False, path, path_str, directions
 
 # def main():
-# 	grid = make_grid(40, 600)
+# 	grid = make_grid(39, 21, 1, 1)
 # 	make_set_barrier(grid)
-# 	start = grid[10][12]
+# 	start = grid[1][1]
 # 	start.make_start()
-# 	end = grid[27][34]
+# 	end = grid[10][6]
 # 	print("go")
 # 	end.make_end()
     
