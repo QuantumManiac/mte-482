@@ -1,25 +1,17 @@
-import navigation
+
 import matplotlib.pyplot as plt 
-
-array = []
-for x in range(len(navigation.GRID)):
-    row = []
-    for y in range(len(navigation.GRID[x])):
-        row.append(navigation.GRID[x][y].barrier)
-    array.append(row)
-
-print(array)
+import navigation
 
 # Calculate the number of rows and columns
-num_rows = len(array)
-num_cols = len(array[0]) if num_rows > 0 else 0
+num_rows = len(navigation.grid)
+num_cols = len(navigation.grid[0]) if num_rows > 0 else 0
 
 # Create a figure and a set of subplots
 fig, ax = plt.subplots()
 
 # Display the array with 'True' as black and 'False' as white
 cmap = plt.cm.gray
-ax.imshow(array, cmap=cmap, aspect='equal')
+ax.imshow(navigation.grid, cmap=cmap, aspect='equal')
 
 # Draw gridlines
 ax.set_xticks([x - 0.5 for x in range(1, num_cols)], minor=True)
