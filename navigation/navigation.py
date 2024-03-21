@@ -81,6 +81,8 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     # state.route = ...
     state.route = path_str
 
+    print(f'Starting navigation. Route: {path_str}')
+
     pub.send_string(f'zmq_navigation {NavMessages.START_NAV.value}')
 
 def to_recalculate(curr, next):
@@ -109,12 +111,14 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
             start = grid[currentX][currentY]
             end = grid[end_x][end_y]
             complete, path, path_str, directions = navigation.algorithm(grid, start, end)
+            print(f'Recalculated route: {path_str}')
             notification = NavMessages.RECALCULATED
         elif dist_to_next <= 2: #may pose an issue if the user turns too quickly:,)
             directions.pop(0)
             curr_pos = [path[0].y, path[0].x]
             path.pop(0)
             dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
+            print(f'Making turn: {directions[0]}')
             notification = NavMessages.MAKE_TURN
             
         heading = 0
@@ -145,6 +149,7 @@ def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket)
     state.route = None
     state.nextStep = None
     state.distToNextStep = None
+    print('Navigation cancelled')
         
     pub.send_string(f'zmq_navigation {NavMessages.CANCELLED}')
 
@@ -182,8 +187,8 @@ def main():
     while True:
         update_localization_state_to_db(session, sub)
         tick(session, pub)
-        # sleep(0.3)
-        sleep(1)
+        sleep(0.3)
+        # sleep(1)
 
 if __name__ == "__main__":
     main()
