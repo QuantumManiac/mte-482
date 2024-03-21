@@ -223,7 +223,7 @@ def make_set_barrier(grid):
     # Make the rectangle barriers
     for div_row in div_rows:
         for div_col in div_cols:
-            make_rectangle_barrier(grid, div_row, div_col, length_y, length_x)
+            make_rectangle_barrier(grid, div_col, div_row, length_x, length_y)
 					
 def make_grid(length_x, length_y, tile_length_x, tile_length_y):
     grid = [[Spot(x, y, tile_length_x, tile_length_y, length_x, length_y) for y in range(length_y)] for x in range(length_x)]
