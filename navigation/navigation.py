@@ -173,10 +173,10 @@ def main():
     sub.connect("tcp://127.0.0.1:5555")
     sub.setsockopt(zmq.SUBSCRIBE, b"zmq_localization")
 
-    # with session.begin():
-    #     session.query(NavigationState).delete()
-    #     session.add(NavigationState(id=0, state=NavState.IDLE.value))
-    #     session.commit()
+    with session.begin():
+        session.query(NavigationState).delete()
+        session.add(NavigationState(id=0, currentX=1, currentY=1, state=NavState.IDLE.value))
+        session.commit()
 
     # Update state every 300ms
     while True:
