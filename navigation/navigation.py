@@ -94,46 +94,50 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
     currentX, currentY, end_x, end_y, heading = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY)), int(round(state.heading))
     # TODO Update state based on current position and route
     notification = NavMessages.NEW_POSTION # Or NavMessages.MAKE_TURN or NavMessages.ARRIVED, NavMessages.RECALCULATED implement this
-    heading = 0
-    curr_pos = [(currentX), (currentY)]
-    next_turn = [(path[0].y), (path[0].x)]
-    recalculate = to_recalculate(curr_pos, next_turn)
-    dist_to_next = dist_calc(currentX, currentY, path[0].y, path[0].x)
 
-    if (currentX, currentY == int(state.destX), int(state.destY)):
+
+    
+    if (currentX, currentY == end_x, end_y):
         notification = NavMessages.ARRIVED
-    elif recalculate:
-        start = grid[currentX][currentY]
-        end = grid[end_x][end_y]
-        complete, path, path_str, directions = navigation.algorithm(grid, start, end)
-        notification = NavMessages.RECALCULATED
-    elif dist_to_next <= 2: #may pose an issue if the user turns too quickly:,)
-        directions.pop(0)
-        curr_pos = [path[0].y, path[0].x]
-        path.pop(0)
+    else:
+        curr_pos = [(currentX), (currentY)]
+        next_turn = [(path[0].y), (path[0].x)]
+        recalculate = to_recalculate(curr_pos, next_turn)
         dist_to_next = dist_calc(currentX, currentY, path[0].y, path[0].x)
-        notification = NavMessages.MAKE_TURN
 
-    if currentX > path[0].y:
-        heading = 180
-    elif currentY < path[0].x:
-        heading = -90
-    elif currentY > path[0].x:
-        heading = 90
+        if recalculate:
+            start = grid[currentX][currentY]
+            end = grid[end_x][end_y]
+            complete, path, path_str, directions = navigation.algorithm(grid, start, end)
+            notification = NavMessages.RECALCULATED
+        elif dist_to_next <= 2: #may pose an issue if the user turns too quickly:,)
+            directions.pop(0)
+            curr_pos = [path[0].y, path[0].x]
+            path.pop(0)
+            dist_to_next = dist_calc(currentX, currentY, path[0].y, path[0].x)
+            notification = NavMessages.MAKE_TURN
+            
+        heading = 0
+        if currentX > path[0].y:
+            heading = 180
+        elif currentY < path[0].x:
+            heading = -90
+        elif currentY > path[0].x:
+            heading = 90
 
-    # TODO Update State
-    # state.nextStep = 'left'
-    state.nextStep = directions[0]
-    # state.distToNextStep = 5
-    state.distToNextStep = dist_to_next
-    # state.desiredHeading = 5
-    state.desiredHeading = heading
-    # Also change the route if recalculated
-    # state.route = ...
-    if notification == NavMessages.RECALCULATED:
-        state.route = path_str
+        # TODO Update State
+        # state.nextStep = 'left'
+        state.nextStep = directions[0]
+        # state.distToNextStep = 5
+        state.distToNextStep = dist_to_next
+        # state.desiredHeading = 5
+        state.desiredHeading = heading
+        # Also change the route if recalculated
+        # state.route = ...
+        if notification == NavMessages.RECALCULATED:
+            state.route = path_str
 
-    pub.send_string(f'zmq_navigation {notification.value}')
+        pub.send_string(f'zmq_navigation {notification.value}')
 
 def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket):
     state.state = NavState.IDLE.value
