@@ -6,8 +6,8 @@ from sqlalchemy.orm.session import Session
 import navigation_old as navigation
 from typing import List
 
-TILES_X = 21
-TILES_Y = 39
+TILES_X = 39
+TILES_Y = 21
 SCALE_X = 1
 SCALE_Y = 1
 
