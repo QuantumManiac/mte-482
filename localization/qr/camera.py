@@ -6,7 +6,7 @@ import zmq
 import json
 
 
-SHOW_VIDEO = False
+SHOW_VIDEO = True
 ZMQ_PUB = "tcp://172.20.10.11:5556"
 
 
@@ -23,6 +23,9 @@ def process_frame(frame, qr):
 
     if not decoded_objects:
         return None, None, None, None
+    qr_data = decoded_objects[0].data.decode().split(',')
+    pos_x = qr_data[0]
+    pos_y = qr_data[1]
     
     ret_qr, rect_points = qr.detect(frame)
     if not ret_qr or rect_points is [[]]:
@@ -42,10 +45,10 @@ def process_frame(frame, qr):
         cv2.line(frame, tuple(map(int, top_left)), tuple(map(int, top_right)), (0, 255, 0), 5)
 
     # Calculate the angle of the top edge with respect to the x-axis
-    angle = calculate_angle(top_left, top_right)
-    pos_x, pos_y = top_left
-
-    # TODO: convert from image frame to global frame
+    qr_angle = calculate_angle(top_left, top_right)
+    cart_angle = 90 - qr_angle
+    if cart_angle > 180:
+        cart_angle = -(qr_angle+180)  # make it 0 -> +-180
 
     return frame, pos_x, pos_y, angle
 
@@ -89,8 +92,8 @@ if __name__ == "__main__":
                     "pos_y": float(pos_y),
                     "angle": float(angle)
                 }
-                pub.send_string(f"qr {json.dumps(msg)}")
-            # print(f"angle: {angle} position: {pos_x} {pos_y}")
+                # pub.send_string(f"qr {json.dumps(msg)}")
+                print(f"angle: {angle} position: {pos_x} {pos_y}")
 
         # Display the processed frame
         if processed_frame is not None and SHOW_VIDEO:
