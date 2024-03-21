@@ -193,63 +193,40 @@ def print_path(came_from, next_points, current):
         # 	format_str = f"{path_str} \n"
         file.write(path_str)
         return path_str, path, dir
+    
+# Set the border of the grid to be barriers
+def make_border(grid):
+    num_rows, num_cols = len(grid), len(grid[0])
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if i == 0 or j == 0 or i == num_rows - 1 or j == num_cols - 1:
+                spot = grid[i][j]
+                spot.make_barrier()
+
+# Make a rectangle of barriers
+def make_rectangle_barrier(grid, x, y, width, height):
+    for i in range(x, x + width):
+        for j in range(y, y + height):
+            spot = grid[i][j]
+            spot.make_barrier()
 
 def make_set_barrier(grid):
-    frozen1y = 1
-    frozen2x = 1
-    num_shelves_x = 2
-    num_shelves_y = 6
     length_x = 17
     length_y = 2
-    div_rows = [2, 19]
-    div_cols = [2, 5, 8, 11, 14, 17]
+    div_rows = [2, 5, 8, 11, 14, 17]
+    div_cols = [2, 20]
     # LAST_ROW = 77
 
-    num_rows, num_cols = len(grid), len(grid[0])
+    # Make the border of the grid barriers
+    make_border(grid)
 
-    for i in range(num_rows):
-        for j in range(frozen1y):
-            spot = grid[i][j]
-            spot.make_barrier()
-
-    for i in range(num_rows):
-        for j in range(frozen1y):
-            spot = grid[i][num_cols - 1 - j]
-            spot.make_barrier()
-    
-    for i in range(frozen2x):
-        for j in range(num_cols):
-            spot = grid[i][j]
-            spot.make_barrier()
-		
-    for i in range(frozen2x):
-        for j in range(num_cols):
-            spot = grid[num_rows - 1 - i][j]
-            spot.make_barrier()
-		
-    for i in range(num_shelves_x):
-        for j in range(num_shelves_y):
-            for k in range(length_x):
-                for l in range(length_y):
-                    x_coord = div_rows[i]+k
-                    y_coord = div_cols[j]+l
-                    spot = grid[x_coord][y_coord]
-                    spot.make_barrier()
+    # Make the rectangle barriers
+    for div_row in div_rows:
+        for div_col in div_cols:
+            make_rectangle_barrier(grid, div_row, div_col, length_y, length_x)
 					
-    # for i in range(num_shelves_y):
-    #     for j in range(length_y):
-    #         y_coord = div_cols[i]+j
-    #         spot = grid[LAST_ROW][y_coord]
-    #         spot.make_barrier()	
-					
-def make_grid(rows, cols, tile_width, tile_height):
-    grid = []
-    for i in range(rows):
-        row = []
-        for j in range(cols):
-            spot = Spot(i, j, tile_width, tile_height, rows, cols)
-            row.append(spot)
-        grid.append(row)
+def make_grid(length_x, length_y, tile_length_x, tile_length_y):
+    grid = [[Spot(x, y, tile_length_x, tile_length_y, length_x, length_y) for y in range(length_y)] for x in range(length_x)]
     return grid
 
 def reconstruct_path(came_from, current):

@@ -6,12 +6,16 @@ import navigation
 num_rows = len(navigation.grid)
 num_cols = len(navigation.grid[0]) if num_rows > 0 else 0
 
+# Take the grid and convert it into a 2D array of booleans which indicate whether a cell has a barrier
+grid = [[navigation.grid[row][col].is_barrier() for col in range(num_cols)] for row in range(num_rows)]
+print(len(grid))
+print(len(grid[0]))
 # Create a figure and a set of subplots
 fig, ax = plt.subplots()
 
 # Display the array with 'True' as black and 'False' as white
 cmap = plt.cm.gray
-ax.imshow(navigation.grid, cmap=cmap, aspect='equal')
+ax.imshow(grid, cmap=cmap, aspect='equal')
 
 # Draw gridlines
 ax.set_xticks([x - 0.5 for x in range(1, num_cols)], minor=True)
