@@ -15,8 +15,6 @@ grid = [[navigation.grid[row][col].is_barrier() for col in range(y_bound)] for r
 # Transpose the grid so that the first index corresponds to the x-coordinate and the second index corresponds to the y-coordinate
 grid = np.transpose(grid)
 
-print(len(grid))
-print(len(grid[0]))
 # Create a figure and a set of subplots
 fig, ax = plt.subplots()
 
