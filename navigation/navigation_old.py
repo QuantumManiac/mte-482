@@ -107,13 +107,13 @@ def create_string(prev_spot, curr_spot, next_spot):
     dir = ""
     turned = False
     if (v1x*v2y - v1y*v2x) > 0:
-        dir = "Left"
+        dir = "left"
         turned = True
     elif (v1x*v2y - v1y*v2x) < 0:
-        dir = "Right"
+        dir = "right"
         turned = True
 
-    directions = f"Straight until: ({curr_spot.row}, {curr_spot.col}), Turn: {dir} "
+    directions = f"{curr_spot.row},{curr_spot.col},{dir}|"
     # curr_str = f"Next: ({prev_spot.row}, {prev_spot.col}), Curr: ({curr_spot.row}, {curr_spot.col}), Prev: ({next_spot.row}, {next_spot.col}), ({dir})"
     # print(curr_str)
     return curr_spot, directions, dir, turned
@@ -169,7 +169,7 @@ def print_path(came_from, next_points, current):
             except:
                 print("end")
             if count == 0:
-                    arrived = f"({current.row}, {current.col}) arrive_{to_aisle}"
+                    arrived = f"{current.row},{current.col},arrive_{to_aisle}"
                     arrival = [(current.row), (current.col)]
                     path.append(arrival)
                     path_str = arrived
@@ -191,8 +191,9 @@ def print_path(came_from, next_points, current):
             # formatted = temp
         # for i in range(len(path_str)):
         # 	format_str = f"{path_str} \n"
+        path_str = f"{current.x},{current.y},start|" + path_str
         file.write(path_str)
-        return path_str, path, dir
+        return path_str, path, turn_dir
     
 # Set the border of the grid to be barriers
 def make_border(grid):

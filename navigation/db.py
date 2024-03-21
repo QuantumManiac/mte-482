@@ -17,6 +17,7 @@ class NavigationState(Base):
     route = Column(String, nullable=True)
     nextStep = Column(String, nullable=True)
     distToNextStep = Column(Float, nullable=True)
+    desiredHeading = Column(Float, nullable=True)
     currentX = Column(Float, default=0)
     currentY = Column(Float, default=0)
     heading = Column(Float, default=0)
