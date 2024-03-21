@@ -47,7 +47,9 @@ def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
     except zmq.error.ZMQError:
         pass     
     
-def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket, path: List[navigation.Point] = path):
+def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
+    global path
+    global directions
     next_step = ''
     dist_to_next = 0
     heading = 0
@@ -56,20 +58,18 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket, p
     start.make_start()
     end = grid[end_x][end_y]
     end.make_end()
-    print(start, end)
     complete, path, path_str, directions = navigation.algorithm(grid, start, end)
-    print(path, path_str, directions)
     heading = 0
 
     if complete:
         next_step = directions[0]
-        dist_to_next = dist_calc(start_x, start_y, path[0].y, path[0].x)
-        if start_x > path[0].y:
+        dist_to_next = dist_calc(start_x, start_y, path[0].x, path[0].y)
+        if start_y < path[0].y:
             heading = 180
-        elif start_y < path[0].x:
-            heading = -90
-        elif start_y > path[0].x:
+        elif start_x < path[0].x:
             heading = 90
+        elif start_x > path[0].x:
+            heading = 270
 
     state.state = NavState.NAVIGATING.value
     # state.nextStep = 'left'
@@ -90,20 +90,20 @@ def to_recalculate(curr, next):
     return False
 
 
-def update_navigation_state(session: Session, state: NavigationState, pub: zmq.Socket, path: List[navigation.Point] = path):
+def update_navigation_state(session: Session, state: NavigationState, pub: zmq.Socket):
+    global path
+    global directions
     currentX, currentY, end_x, end_y, heading = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY)), int(round(state.heading))
     # TODO Update state based on current position and route
     notification = NavMessages.NEW_POSTION # Or NavMessages.MAKE_TURN or NavMessages.ARRIVED, NavMessages.RECALCULATED implement this
 
-
-    
-    if (currentX, currentY == end_x, end_y):
+    if ((currentX, currentY) == (end_x, end_y)):
         notification = NavMessages.ARRIVED
     else:
         curr_pos = [(currentX), (currentY)]
         next_turn = [(path[0].y), (path[0].x)]
         recalculate = to_recalculate(curr_pos, next_turn)
-        dist_to_next = dist_calc(currentX, currentY, path[0].y, path[0].x)
+        dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
 
         if recalculate:
             start = grid[currentX][currentY]
@@ -114,16 +114,16 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
             directions.pop(0)
             curr_pos = [path[0].y, path[0].x]
             path.pop(0)
-            dist_to_next = dist_calc(currentX, currentY, path[0].y, path[0].x)
+            dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
             notification = NavMessages.MAKE_TURN
             
         heading = 0
-        if currentX > path[0].y:
+        if currentY < path[0].y:
             heading = 180
-        elif currentY < path[0].x:
-            heading = -90
-        elif currentY > path[0].x:
+        elif currentX < path[0].x:
             heading = 90
+        elif currentX > path[0].x:
+            heading = 270
 
         # TODO Update State
         # state.nextStep = 'left'
@@ -182,7 +182,8 @@ def main():
     while True:
         update_localization_state_to_db(session, sub)
         tick(session, pub)
-        sleep(0.3)
+        # sleep(0.3)
+        sleep(1)
 
 if __name__ == "__main__":
     main()

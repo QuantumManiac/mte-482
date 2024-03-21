@@ -191,6 +191,7 @@ def print_path(came_from, next_points, current):
             # formatted = temp
         # for i in range(len(path_str)):
         # 	format_str = f"{path_str} \n"
+        path_str = f"{current.x},{current.y},start|" + path_str
         file.write(path_str)
         return path_str, path, turn_dir
     
