@@ -1,9 +1,9 @@
-#define in1A 7
-#define in2A 8
-#define enB 5
-#define enA 9
-#define in1B 2
-#define in2B 4
+#define in1A 2
+#define in2A 4
+#define enA 3
+#define enB 6
+#define in1B 5
+#define in2B 7
 
 
 void setup() {
