@@ -9,6 +9,10 @@ interface GuidanceTextProps {
 export default function NavigationGuidanceText({navigationState}: GuidanceTextProps) {
     function determineNavigationTextAndIcon(): [string, string] {
         switch (navigationState.nextStep) {
+            case "arrive_left":
+                 return [`Destination on left in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
+            case "arrive_left":
+                 return [`Destination on right in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
             case "arrive":
                  return [`Destination in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
             case "left":

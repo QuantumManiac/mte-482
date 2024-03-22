@@ -165,7 +165,7 @@ def tick(session: Session, pub: zmq.Socket):
         case NavState.NAVIGATING.value:
             update_navigation_state(session, state, pub)
         case NavState.PENDING_CANCEL.value:
-            cancel_navigation(session, pub)
+            cancel_navigation(session, state, pub)
 
 def main():    
     context = zmq.Context()

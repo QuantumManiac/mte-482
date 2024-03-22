@@ -18,7 +18,7 @@ export default function NavigationInfoBar({navigationState, handleCancelRoute}: 
         )
     } else {
         return (
-            <div className="flex space-x-1 bg-slate-300 h-[5rem]">
+            <div className="flex space-x-1 bg-slate-300 h-[4rem]">
                 <div className="flex-1 flex items-center bg-slate-100 h-full">
                     <NavigationDestinationText navigationState={navigationState} />
                 </div>
