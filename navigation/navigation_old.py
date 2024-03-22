@@ -169,6 +169,7 @@ def print_path(came_from, next_points, current):
             except:
                 print("end")
             if count == 0:
+                    to_aisle = des_loc(prev_spot, current, next_spot)
                     arrived = f"{current.row},{current.col},arrive_{to_aisle}"
                     arrival = [(current.row), (current.col)]
                     path.append(arrival)

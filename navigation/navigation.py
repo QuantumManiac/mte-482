@@ -46,11 +46,55 @@ def update_localization_state_to_db(session: Session, zmq_sub: zmq.Socket):
             session.commit()
     except zmq.error.ZMQError:
         pass     
+
+def find_heading(curr_x, curr_y, end_x, end_y):
+    heading = 0
+    if curr_y < end_y:
+        heading = 180
+    elif curr_x < end_x:
+        heading = 90
+    elif curr_x > end_x:
+        heading = 270
+
+    return heading
+
+def des_loc(start_x, start_y, end_x, end_y, heading):
+    direction = ""
+    des_heading = 0
+    des_heading = find_heading(start_x, start_y, end_x, end_y)
+    if des_heading != heading:
+        if des_heading == 0:
+            if heading <= 180:
+                direction = "right"
+            else:
+                direction = "left"
+        elif des_heading == 90:
+            if heading > 90 and heading <= 270:
+                direction = "right"
+            else:
+                direction = "left"
+        elif des_heading == 180:
+            if heading > 180 and heading < 360:
+                direction = "right"
+            else:
+                direction = "left"
+        elif des_heading == 270:
+            if heading < 90 and heading > 270:
+                direction = "right"
+            else:
+                direction = "left"
+    else:
+        direction = "straight"
+
+    return direction, des_heading
+
+
     
 def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     global path
     global directions
     next_step = ''
+    complete = False
     dist_to_next = 0
     heading = 0
     start_x, start_y, end_x, end_y = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY))
@@ -58,18 +102,21 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     start.make_start()
     end = grid[end_x][end_y]
     end.make_end()
-    complete, path, path_str, directions = navigation.algorithm(grid, start, end)
-    heading = 0
+
+    dist_to_next = dist_calc(start_x, start_y, end_x, end_y)
+
+    if dist_to_next == 1:
+        next_step, heading = des_loc(start_x, start_y, end_x, end_y, state.heading)
+        path_str = next_step
+    else: 
+        complete, path, path_str, directions = navigation.algorithm(grid, start, end)
+        heading = 0
+
 
     if complete:
         next_step = directions[0]
         dist_to_next = dist_calc(start_x, start_y, path[0].x, path[0].y)
-        if start_y < path[0].y:
-            heading = 180
-        elif start_x < path[0].x:
-            heading = 90
-        elif start_x > path[0].x:
-            heading = 270
+        heading = find_heading(start_x, start_y, path[0].x, path[0].y)
 
     state.state = NavState.NAVIGATING.value
     # state.nextStep = 'left'
@@ -121,7 +168,7 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
             print(f'Making turn: {directions[0]}')
             notification = NavMessages.MAKE_TURN
             
-        heading = 0
+        heading = find_heading(currentX, currentY, path[0].x, path[0].y)
         if currentY < path[0].y:
             heading = 180
         elif currentX < path[0].x:
