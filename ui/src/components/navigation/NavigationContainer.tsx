@@ -54,7 +54,7 @@ export default function NavigationContainer({initialNavigationState, cartItems, 
     }
 
     return (
-        <div className="flex flex-col h-screen space-y-1 bg-slate-300">
+        <div className="flex flex-col h-screen space-y-1 bg-slate-300 overflow-hidden">
             <div className="bg-red-100 flex-1">
                 <NavigationMap navigationState={navigationState!} cartItems={cartItems} />
             </div>

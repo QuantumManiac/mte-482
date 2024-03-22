@@ -24,7 +24,6 @@ export default function NavigationMap({navigationState, cartItems}: NavigationMa
         }
     }
     
-    const displayDest = navigationState.state as NavState == NavState.NAVIGATING && navigationState.destX && navigationState.destY
     const mapStyle = {
         backgroundImage: "url('/img/map.png')",
         backgroundSize: "100% 100%",
@@ -35,15 +34,10 @@ export default function NavigationMap({navigationState, cartItems}: NavigationMa
   };
     return (
         <div style={mapStyle}>
-            {navigationState.route && <NavigationMapRoute pathString={navigationState.route} transformCoordinate={transformCoordinate} />}
+            {navigationState.route && <NavigationMapRoute navigationState={navigationState} transformCoordinate={transformCoordinate} />}
             <CartMarker pos={transformCoordinate(navigationState.currentX, navigationState.currentY)} heading={navigationState.heading}/>
-            {displayDest && <MapMarker pos={transformCoordinate(navigationState.destX!, navigationState.destY!)} icon="🏁" tooltipText={navigationState.destName} />}
             {cartItems.map((item, index) => {
                 if (item.locationX && item.locationY) {
-                    const isDestination = navigationState.destX == item.locationX && navigationState.destY == item.locationY;
-                    if (isDestination) {
-                        return
-                    }
                     const icon = item.done ? "✅" : "🚩"
                     return <MapMarker key={index} pos={transformCoordinate(item.locationX, item.locationY)} icon={icon} tooltipText={item.name} />
                 }
