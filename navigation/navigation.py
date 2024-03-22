@@ -107,6 +107,8 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
 
     if dist_to_next == 1:
         next_step, heading = des_loc(start_x, start_y, end_x, end_y, state.heading)
+        path = [end_x, end_y]
+        directions = next_step
         path_str = next_step
     else: 
         complete, path, path_str, directions = navigation.algorithm(grid, start, end)
