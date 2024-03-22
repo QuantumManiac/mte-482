@@ -162,7 +162,7 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
             complete, path, path_str, directions = navigation.algorithm(grid, start, end)
             print(f'Recalculated route: {path_str}')
             notification = NavMessages.RECALCULATED
-        elif dist_to_next <= 2: #may pose an issue if the user turns too quickly:,)
+        elif dist_to_next <= 1: #may pose an issue if the user turns too quickly:,)
             directions.pop(0)
             curr_pos = [path[0].x, path[0].y]
             dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
