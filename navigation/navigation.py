@@ -169,12 +169,6 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
             notification = NavMessages.MAKE_TURN
             
         heading = find_heading(currentX, currentY, path[0].x, path[0].y)
-        if currentY < path[0].y:
-            heading = 180
-        elif currentX < path[0].x:
-            heading = 90
-        elif currentX > path[0].x:
-            heading = 270
 
         # TODO Update State
         # state.nextStep = 'left'
