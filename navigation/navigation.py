@@ -164,9 +164,9 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
             notification = NavMessages.RECALCULATED
         elif dist_to_next <= 2: #may pose an issue if the user turns too quickly:,)
             directions.pop(0)
-            curr_pos = [path[0].y, path[0].x]
-            path.pop(0)
+            curr_pos = [path[0].x, path[0].y]
             dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
+            path.pop(0)
             print(f'Making turn: {directions[0]}')
             notification = NavMessages.MAKE_TURN
             
