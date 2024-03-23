@@ -92,11 +92,13 @@ class Spot:
 def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
+    print(abs(x1 - x2) + abs(y1 - y2))
     return abs(x1 - x2) + abs(y1 - y2)
 
 def pythagorean(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
+    print(math.sqrt((x1-x2)**2 + (y1-y2)**2))
     return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 def create_string(prev_spot, curr_spot, next_spot):
@@ -131,7 +133,7 @@ def des_loc(last_point, second_last, third_last):
 
     return direction
 
-def print_path(came_from, next_points, current):
+def print_path(came_from, next_points, current, barrier):
     to_aisle = ""
     # count = 0
     # # chamath pls ignore how bad this is i just need to access the last three points
@@ -169,10 +171,17 @@ def print_path(came_from, next_points, current):
             except:
                 print("end")
             if count == 0:
-                    to_aisle = des_loc(prev_spot, current, next_spot)
-                    arrived = f"{current.row},{current.col},arrive_{to_aisle}"
-                    arrival = [(current.row), (current.col)]
-                    path.append(arrival)
+                    if (barrier):
+                        to_aisle = des_loc(prev_spot, current, next_spot)
+                        arrived = f"{current.row},{current.col},arrive_{to_aisle}"
+                        path.insert(0, current)
+                    else:
+                        to_aisle = "straight"
+                        arrived = f"{prev_spot.row},{prev_spot.col},arrive_{to_aisle}"
+                        path.insert(0, prev_spot)
+                    
+                    # arrival = [(current.row), (current.col)]
+                    
                     path_str = arrived
                     turn_dir.append("Arrived!")
 
@@ -239,7 +248,8 @@ def reconstruct_path(came_from, current):
             formatted = f"{current.row} {current.col}\n"
             file.write(formatted)
             
-def algorithm(grid, start, end):
+def algorithm(grid, start, end, is_barrier):
+    print(f'is barrier: {is_barrier}')
     for row in grid:
         for spot in row:
             spot.update_neighbors(grid)
@@ -272,8 +282,9 @@ def algorithm(grid, start, end):
             # for x in next_points:
             #     formatted = f"next:row {x.row}, next:col {x.col}"
             #     print(formatted)
+            
             reconstruct_path(came_from, end)
-            path_str, path, directions = print_path(came_from, next_points, end)
+            path_str, path, directions = print_path(came_from, next_points, end, is_barrier)
             end.make_end()
             print("ended")
             return True, path, path_str, directions

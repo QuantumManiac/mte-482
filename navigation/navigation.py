@@ -15,6 +15,9 @@ grid = navigation.make_grid(TILES_X, TILES_Y, SCALE_X, SCALE_Y)
 navigation.make_set_barrier(grid)
 path: List[navigation.Point] = []
 directions = []
+is_barrier = False
+prev_x = 0
+prev_y = 0
 
 
 # States that the navigation system can be in
@@ -91,19 +94,24 @@ def des_loc(start_x, start_y, end_x, end_y, heading):
 
     return direction, des_heading
 
-
-    
 def calculate_route(state: NavigationState, pub: zmq.Socket):
+    navigation.make_set_barrier(grid)
     global path
     global directions
+    global is_barrier
+    global prev_x
+    global prev_y
     next_step = ''
     complete = False
     dist_to_next = 0
     heading = 0
     start_x, start_y, end_x, end_y = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY))
     start = grid[start_x][start_y]
+    prev_x = start_x
+    prev_y = start_y
     start.make_start()
     end = grid[end_x][end_y]
+    is_barrier = end.is_barrier()
     end.make_end()
 
     dist_to_next = dist_calc(start_x, start_y, end_x, end_y)
@@ -114,7 +122,7 @@ def calculate_route(state: NavigationState, pub: zmq.Socket):
         directions = next_step
         path_str = next_step
     else: 
-        complete, path, path_str, directions = navigation.algorithm(grid, start, end)
+        complete, path, path_str, directions = navigation.algorithm(grid, start, end, is_barrier)
         heading = 0
 
 
@@ -138,7 +146,7 @@ def calculate_route(state: NavigationState, pub: zmq.Socket):
     pub.send_string(f'navigation {NavMessages.START_NAV.value}')
 
 def to_recalculate(curr, next):
-    if navigation.pythagorean(curr, next) > navigation.h(curr, next):
+    if navigation.pythagorean(curr, next) > 3:
         return True
     
     return False
@@ -147,37 +155,56 @@ def to_recalculate(curr, next):
 def update_navigation_state(state: NavigationState, pub: zmq.Socket):
     global path
     global directions
+    global is_barrier
+    global prev_x
+    global prev_y
+    next_step = ""
     currentX, currentY, end_x, end_y, heading = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY)), int(round(state.heading))
     # TODO Update state based on current position and route
     notification = NavMessages.NEW_POSTION # Or NavMessages.MAKE_TURN or NavMessages.ARRIVED, NavMessages.RECALCULATED implement this
 
     if ((currentX, currentY) == (end_x, end_y)):
         notification = NavMessages.ARRIVED
+        dist_to_next = 0
     else:
+        prev_pos = [(prev_x), (prev_y)]
+        prev_x = currentX
+        prev_y = currentY
         curr_pos = [(currentX), (currentY)]
         next_turn = [(path[0].y), (path[0].x)]
-        recalculate = to_recalculate(curr_pos, next_turn)
+        recalculate = to_recalculate(curr_pos, prev_pos)
         dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
 
         if recalculate:
             start = grid[currentX][currentY]
             end = grid[end_x][end_y]
-            complete, path, path_str, directions = navigation.algorithm(grid, start, end)
+            complete, path, path_str, directions = navigation.algorithm(grid, start, end, is_barrier)
             print(f'Recalculated route: {path_str}')
             notification = NavMessages.RECALCULATED
-        elif dist_to_next <= 1: #may pose an issue if the user turns too quickly:,)
-            directions.pop(0)
+        elif dist_to_next <= 0: #may pose an issue if the user turns too quickly:,)
             curr_pos = [path[0].x, path[0].y]
             dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
+            print(f'path[0]: {path[0].x}, {path[0].y}')
+            print(f'path len: {len(path)}')
             path.pop(0)
             print(f'Making turn: {directions[0]}')
+            directions.pop(0)
             notification = NavMessages.MAKE_TURN
+        
+        if (len(path) == 0 and is_barrier):
+            heading = find_heading(currentX, currentY, end_x, end_y)
+            next_step = "Arrived"
+        elif (len(path) == 0 and not(is_barrier)):
+            heading = state.desiredHeading
+            next_step = "Arrived"
+        else:
+            heading = find_heading(currentX, currentY, path[0].x, path[0].y)
+            next_step = directions[0]
             
-        heading = find_heading(currentX, currentY, path[0].x, path[0].y)
 
         # TODO Update State
         # state.nextStep = 'left'
-        state.nextStep = directions[0]
+        state.nextStep = next_step
         # state.distToNextStep = 5
         state.distToNextStep = dist_to_next
         # state.desiredHeading = 5
@@ -190,11 +217,12 @@ def update_navigation_state(state: NavigationState, pub: zmq.Socket):
         pub.send_string(f'navigation {notification.value}')
 
 def cancel_navigation(state: NavigationState, pub: zmq.Socket):
+
     state.state = NavState.IDLE.value
-    state.routeTo = None
     state.route = None
     state.nextStep = None
     state.distToNextStep = None
+
     print('Navigation cancelled')
         
     pub.send_string(f'navigation {NavMessages.CANCELLED}')
@@ -205,7 +233,6 @@ def send_new_pos(pub: zmq.Socket):
 def tick(pub: zmq.Socket):
     session = init_session()
     state = session.query(NavigationState).filter(NavigationState.id == 0).first()
-    session.commit()
 
     match state.state:
         case NavState.IDLE.value:
@@ -213,9 +240,12 @@ def tick(pub: zmq.Socket):
         case NavState.START_NAV.value:
             calculate_route(state, pub)
         case NavState.NAVIGATING.value:
+            # calculate_route(state, pub)
             update_navigation_state(state, pub)
         case NavState.PENDING_CANCEL.value:
             cancel_navigation(state, pub)
+
+    session.commit()
 
 def main():    
     context = zmq.Context()
