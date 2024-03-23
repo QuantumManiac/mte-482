@@ -92,7 +92,7 @@ def des_loc(start_x, start_y, end_x, end_y, heading):
 
     return direction, des_heading
 
-def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
+def calculate_route(state: NavigationState, pub: zmq.Socket):
     navigation.make_set_barrier(grid)
     global path
     global directions
