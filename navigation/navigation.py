@@ -16,6 +16,8 @@ navigation.make_set_barrier(grid)
 path: List[navigation.Point] = []
 directions = []
 is_barrier = False
+prev_x = 0
+prev_y = 0
 
 
 # States that the navigation system can be in
@@ -92,17 +94,21 @@ def des_loc(start_x, start_y, end_x, end_y, heading):
 
     return direction, des_heading
 
-def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
+def calculate_route(state: NavigationState, pub: zmq.Socket):
     navigation.make_set_barrier(grid)
     global path
     global directions
     global is_barrier
+    global prev_x
+    global prev_y
     next_step = ''
     complete = False
     dist_to_next = 0
     heading = 0
     start_x, start_y, end_x, end_y = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY))
     start = grid[start_x][start_y]
+    prev_x = start_x
+    prev_y = start_y
     start.make_start()
     end = grid[end_x][end_y]
     is_barrier = end.is_barrier()
@@ -140,7 +146,7 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     pub.send_string(f'navigation {NavMessages.START_NAV.value}')
 
 def to_recalculate(curr, next):
-    if navigation.pythagorean(curr, next) > navigation.h(curr, next):
+    if navigation.pythagorean(curr, next) > 3:
         return True
     
     return False
@@ -150,6 +156,8 @@ def update_navigation_state(state: NavigationState, pub: zmq.Socket):
     global path
     global directions
     global is_barrier
+    global prev_x
+    global prev_y
     next_step = ""
     currentX, currentY, end_x, end_y, heading = int(round(state.currentX)), int(round(state.currentY)), int(round(state.destX)), int(round(state.destY)), int(round(state.heading))
     # TODO Update state based on current position and route
@@ -159,9 +167,12 @@ def update_navigation_state(state: NavigationState, pub: zmq.Socket):
         notification = NavMessages.ARRIVED
         dist_to_next = 0
     else:
+        prev_pos = [(prev_x), (prev_y)]
+        prev_x = currentX
+        prev_y = currentY
         curr_pos = [(currentX), (currentY)]
         next_turn = [(path[0].y), (path[0].x)]
-        recalculate = to_recalculate(curr_pos, next_turn)
+        recalculate = to_recalculate(curr_pos, prev_pos)
         dist_to_next = dist_calc(currentX, currentY, path[0].x, path[0].y)
 
         if recalculate:
@@ -229,8 +240,8 @@ def tick(pub: zmq.Socket):
         case NavState.START_NAV.value:
             calculate_route(state, pub)
         case NavState.NAVIGATING.value:
-            calculate_route(state, pub)
-            # update_navigation_state(session, state, pub)
+            #calculate_route(state, pub)
+            update_navigation_state(session, state, pub)
         case NavState.PENDING_CANCEL.value:
             cancel_navigation(state, pub)
 
