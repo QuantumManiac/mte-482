@@ -59,10 +59,10 @@ void loop() {
 
     int right_pwm = msg % 1000;
     int left_pwm = msg / 1000;
-    Serial.print("\nLeft: ");
-    Serial.print(left_pwm);
-    Serial.print(" Right: ");
-    Serial.print(right_pwm);
+    // Serial.print("\nLeft: ");
+    // Serial.print(left_pwm);
+    // Serial.print(" Right: ");
+    // Serial.print(right_pwm);
 
 
     // Command motors
