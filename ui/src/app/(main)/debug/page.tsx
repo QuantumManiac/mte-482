@@ -8,11 +8,11 @@ import type IMUData from '~/types/IMUData'
 import type ADCData from '~/types/ADCData'
 
 interface ServerToClientEvents {
-    zmq_battery_voltage: (b: number) => void
-    zmq_push_assist: (b: boolean) => void
-    zmq_rfid: (b: string) => void
-    zmq_imu: (b: IMUData) => void
-    zmq_adc: (b: ADCData) => void
+    battery_voltage: (b: number) => void
+    push_assist: (b: boolean) => void
+    rfid: (b: string) => void
+    imu: (b: IMUData) => void
+    adc: (b: ADCData) => void
 }
 
 interface ClientToServerEvents {
@@ -41,17 +41,17 @@ export default function Page() {
 
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
         console.log("Connected to socket.io server")
-        socket.on('zmq_battery_voltage', onBatteryEvent)
-        socket.on('zmq_push_assist', onAssistEvent)
-        socket.on('zmq_rfid', onRfidEvent)
-        socket.on('zmq_imu', onImuEvent)
+        socket.on('battery_voltage', onBatteryEvent)
+        socket.on('push_assist', onAssistEvent)
+        socket.on('rfid', onRfidEvent)
+        socket.on('imu', onImuEvent)
 
         return () => {
             socket.disconnect()
-            socket.off('zmq_battery_voltage', onBatteryEvent)
-            socket.off('zmq_push_assist', onAssistEvent)
-            socket.off('zmq_rfid', onRfidEvent)
-            socket.off('zmq_imu', onImuEvent)
+            socket.off('battery_voltage', onBatteryEvent)
+            socket.off('push_assist', onAssistEvent)
+            socket.off('rfid', onRfidEvent)
+            socket.off('imu', onImuEvent)
         }
     }
     , [])

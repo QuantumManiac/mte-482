@@ -27,8 +27,8 @@ def sio_server(sio: socketio.Server, context: zmq.Context, print_messages=False)
     @sio.on('zmq_message')
     def zmq_message(event, data):
         if print_messages:
-            print(f'[from ZMQ] zmq_{data["topic"]}: {data["msg"]}')
-        sio.emit(f'zmq_{data["topic"]}', data['msg'])
+            print(f'[from ZMQ] {data["topic"]}: {data["msg"]}')
+        sio.emit(f'{data["topic"]}', data['msg'])
 
     @sio.on('ui_message')
     def ui_message(event, data):

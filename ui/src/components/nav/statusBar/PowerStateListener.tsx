@@ -6,7 +6,7 @@ import { env } from "~/env"
 import { useRouter } from "next/navigation";
 
 interface ServerToClientEvents {
-    zmq_power: (s: string) => void;
+    power: (s: string) => void;
 }
 
 interface ClientToServerEvents {
@@ -24,11 +24,11 @@ export default function PowerStateListener() {
         }
 
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
-        socket.on('zmq_power', onPowerStateEvent);
+        socket.on('power', onPowerStateEvent);
 
         return () => {
             socket.disconnect();
-            socket.off('zmq_power', onPowerStateEvent);
+            socket.off('power', onPowerStateEvent);
         }
     }
     , []);

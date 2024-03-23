@@ -1,0 +1,1 @@
+1,1,start|1,4,left|5,4,arrive_left

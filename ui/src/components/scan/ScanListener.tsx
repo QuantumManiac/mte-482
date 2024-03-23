@@ -8,7 +8,7 @@ import { getIdFromRfid } from "~/app/actions";
 
 export default function ScanListener() {
     interface ServerToClientEvents {
-        zmq_rfid: (b: string) => void;
+        rfid: (b: string) => void;
     }
     // TODO Make background green when valid RFID is scanned
 
@@ -29,11 +29,11 @@ export default function ScanListener() {
         }
 
         const socket: Socket<ServerToClientEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
-        socket.on('zmq_rfid', onRfidEvent);
+        socket.on('rfid', onRfidEvent);
 
         return () => {
             socket.disconnect();
-            socket.off('zmq_rfid', onRfidEvent);
+            socket.off('rfid', onRfidEvent);
         }
     }
     , [router]);
