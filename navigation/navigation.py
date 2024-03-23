@@ -132,7 +132,7 @@ def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
 
     print(f'Starting navigation. Route: {path_str}')
 
-    pub.send_string(f'zmq_navigation {NavMessages.START_NAV.value}')
+    pub.send_string(f'navigation {NavMessages.START_NAV.value}')
 
 def to_recalculate(curr, next):
     if navigation.pythagorean(curr, next) > navigation.h(curr, next):
@@ -184,7 +184,7 @@ def update_navigation_state(session: Session, state: NavigationState, pub: zmq.S
         if notification == NavMessages.RECALCULATED:
             state.route = path_str
 
-        pub.send_string(f'zmq_navigation {notification.value}')
+        pub.send_string(f'navigation {notification.value}')
 
 def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket):
     state.state = NavState.IDLE.value
@@ -194,7 +194,7 @@ def cancel_navigation(session: Session, state: NavigationState, pub: zmq.Socket)
     state.distToNextStep = None
     print('Navigation cancelled')
         
-    pub.send_string(f'zmq_navigation {NavMessages.CANCELLED}')
+    pub.send_string(f'navigation {NavMessages.CANCELLED}')
 
 def tick(session: Session, pub: zmq.Socket):
     state = session.query(NavigationState).filter(NavigationState.id == 0).first()
@@ -219,7 +219,7 @@ def main():
     sub: zmq.Socket = context.socket(zmq.SUB)
     sub.setsockopt(zmq.CONFLATE, 1)
     sub.connect("tcp://127.0.0.1:5555")
-    sub.setsockopt(zmq.SUBSCRIBE, b"zmq_localization")
+    sub.setsockopt(zmq.SUBSCRIBE, b"localization")
 
     with session.begin():
         session.query(NavigationState).delete()

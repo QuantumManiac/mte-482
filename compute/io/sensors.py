@@ -47,7 +47,7 @@ def rfid(zmq: zmq.Context, i2c: busio.I2C):
         pn532.listen_for_passive_target(timeout=0.1)
 
 def pushbutton(zmq: zmq.Context):
-    pin = gpiozero.InputDevice(17, pull_up=True)
+    pin = gpiozero.InputDevice(18, pull_up=True)
     pub = setup_zmq_pub(zmq)
 
     while True:

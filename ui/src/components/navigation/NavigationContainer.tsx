@@ -17,7 +17,7 @@ interface NavigationContainerProps {
 } 
 
 interface ServerToClientEvents {
-    zmq_navigation: (msg: NavMessages) => void;
+    navigation: (msg: NavMessages) => void;
 }
 
 interface ClientToServerEvents {
@@ -33,11 +33,11 @@ export default function NavigationContainer({initialNavigationState, cartItems, 
         }
 
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
-        socket.on('zmq_navigation', onNavEvent);
+        socket.on('navigation', onNavEvent);
 
         return () => {
             socket.disconnect();
-            socket.off('zmq_navigation', onNavEvent);
+            socket.off('navigation', onNavEvent);
         }
     }, [getNavigationState]);
     

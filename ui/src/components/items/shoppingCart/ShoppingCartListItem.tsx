@@ -25,7 +25,7 @@ export default function ShoppingCartListItem({ cartItem, handleRemoveFromCart, h
 
     const handleStartNavigation = () => {
         void startRoute({name: cartItem.name, x: cartItem.locationX, y: cartItem.locationY})
-        if (window.location.href != "/") {
+        if (window.location.pathname !== "/") {
             window.location.href = "/"
         }
     }
