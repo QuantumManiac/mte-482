@@ -15,7 +15,7 @@ def adc(zmq: zmq.Context, i2c: busio.I2C):
     chan0 = AnalogIn(adc, ADS.P0)
     chan1 = AnalogIn(adc, ADS.P1)
     chan2 = AnalogIn(adc, ADS.P2)
-    chan3 = AnalogIn(adc, ADS.P2)
+    chan3 = AnalogIn(adc, ADS.P3)
     pub = setup_zmq_pub(zmq)
     
     while True:
