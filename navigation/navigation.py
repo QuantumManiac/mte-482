@@ -92,14 +92,8 @@ def des_loc(start_x, start_y, end_x, end_y, heading):
 
     return direction, des_heading
 
-<<<<<<< Updated upstream
-
-    
-def calculate_route(state: NavigationState, pub: zmq.Socket):
-=======
 def calculate_route(session: Session, state: NavigationState, pub: zmq.Socket):
     navigation.make_set_barrier(grid)
->>>>>>> Stashed changes
     global path
     global directions
     global is_barrier
@@ -235,12 +229,8 @@ def tick(pub: zmq.Socket):
         case NavState.START_NAV.value:
             calculate_route(state, pub)
         case NavState.NAVIGATING.value:
-<<<<<<< Updated upstream
-            update_navigation_state(state, pub)
-=======
-            calculate_route(session, state, pub)
+            calculate_route(state, pub)
             # update_navigation_state(session, state, pub)
->>>>>>> Stashed changes
         case NavState.PENDING_CANCEL.value:
             cancel_navigation(state, pub)
 
