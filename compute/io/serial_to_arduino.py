@@ -39,9 +39,14 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         serial_msg = "0000000"
         if push_msg != '0':
             #  Calculate PWM for each motor and send to ARDUINO
-            print("here")
-            left = float(adc_msg["channel1"]) - float(adc_msg["channel2"])
-            right = float(adc_msg["channel0"]) - float(adc_msg["channel3"])
+            chan0, chan1, chan2, chan3 = float(adc_msg["channel0"]), float(adc_msg["channel1"]), float(adc_msg["channel2"]), float(adc_msg["channel3"])
+            chan0 = 0 if abs(chan0) < THRESHOLD else chan0
+            chan1 = 0 if abs(chan1) < THRESHOLD else chan1
+            chan2 = 0 if abs(chan2) < THRESHOLD else chan2
+            chan3 = 0 if abs(chan3) < THRESHOLD else chan3
+
+            left = chan1 - chan2
+            right = chan0 - chan3
 
             left = 0 if abs(left) < THRESHOLD else left
             right = 0 if abs(right) < THRESHOLD else right
@@ -56,8 +61,15 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
 
             left_pwm = min(PWM_MAX, (abs(left) * K / MAX_VOLTAGE) * PWM_MAX)  # Get PWM, clip at PWM_MAX
             right_pwm = min(PWM_MAX, (abs(right) * K / MAX_VOLTAGE) * PWM_MAX)  # Get PWM, clip at PWM_MAX
-
-            print(f"Pushing - Left: {left_pwm}, Right: {right_pwm}")
+            match directions:
+                case 0:
+                    print(f"Pushing - Left: {left_pwm}, Right: {right_pwm}")
+                case 1:
+                    print(f"Pushing - Left: {left_pwm}, Right: -{right_pwm}")
+                case 2:
+                    print(f"Pushing - Left: -{left_pwm}, Right: {right_pwm}")
+                case 3:
+                    print(f"Pushing - Left: -{left_pwm}, Right: -{right_pwm}")
 
             serial_msg = directions + 10*right_pwm + left_pwm*10000  # msd lllrrrd lsd (e.g. 1801802)
 
