@@ -72,6 +72,7 @@ if __name__ == "__main__":
 
     prev = 0
     print("Camera started successfully")
+    processed_frame = None
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -84,16 +85,21 @@ if __name__ == "__main__":
         time_elapsed = time.time() - prev
         if time_elapsed >= (1/FRAME_RATE):
             prev = time.time()
-            processed_frame, pos_x, pos_y, angle = process_frame(frame, qr)
-            # Publish the resulting position and angle
-            if (pos_x is not None) and (pos_y is not None) and (angle is not None):
-                msg = {
-                    "pos_x": float(pos_x),
-                    "pos_y": float(pos_y),
-                    "angle": float(angle)
-                }
-                # pub.send_string(f"qr {json.dumps(msg)}")
-                print(f"angle: {angle} position: {pos_x} {pos_y}")
+            try:
+                processed_frame, pos_x, pos_y, angle = process_frame(frame, qr)
+                # Publish the resulting position and angle
+                if (pos_x is not None) and (pos_y is not None) and (angle is not None):
+                    msg = {
+                        "pos_x": float(pos_x),
+                        "pos_y": float(pos_y),
+                        "angle": float(angle)
+                    }
+                    pub.send_string(f"qr {json.dumps(msg)}")
+                    # print(f"angle: {angle} position: {pos_x} {pos_y}")
+            except Exception as e:  # Sometimes the camera hallucinates QR codes when there are none, this prevents crashing
+                print(f"Some camera exception: {e}, continuing")
+                continue
+
 
         # Display the processed frame
         if processed_frame is not None and SHOW_VIDEO:
