@@ -57,6 +57,8 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             left_pwm = min(PWM_MAX, (abs(left) * K / MAX_VOLTAGE) * PWM_MAX)  # Get PWM, clip at PWM_MAX
             right_pwm = min(PWM_MAX, (abs(right) * K / MAX_VOLTAGE) * PWM_MAX)  # Get PWM, clip at PWM_MAX
 
+            print(f"Pushing - Left: {left_pwm}, Right: {right_pwm}")
+
             serial_msg = directions + 10*right_pwm + left_pwm*10000  # msd lllrrrd lsd (e.g. 1801802)
 
         print(serial_msg)
