@@ -199,6 +199,9 @@ def cancel_navigation(state: NavigationState, pub: zmq.Socket):
         
     pub.send_string(f'navigation {NavMessages.CANCELLED}')
 
+def send_new_pos(pub: zmq.Socket):
+    pub.send_string(f'navigation {NavMessages.NEW_POSTION.value}')
+
 def tick(pub: zmq.Socket):
     session = init_session()
     state = session.query(NavigationState).filter(NavigationState.id == 0).first()
@@ -206,7 +209,7 @@ def tick(pub: zmq.Socket):
 
     match state.state:
         case NavState.IDLE.value:
-            return
+            send_new_pos(pub)
         case NavState.START_NAV.value:
             calculate_route(state, pub)
         case NavState.NAVIGATING.value:
