@@ -9,8 +9,7 @@ import PowerStateListener from "./PowerStateListener";
 
 interface ServerToClientEvents {
     battery_voltage: (b: number) => void;
-    push_assist_enabled: (e: boolean) => void;
-    push_assist_throttle: (t: number) => void;
+    push_assist: (e: boolean) => void;
 }
 
 interface ClientToServerEvents {
@@ -23,36 +22,29 @@ export default function StatusBar() {
             setBattery(battery);
         }
 
-        function onPushAssistEnabledEvent(enabled: boolean) {
+        function onPushAssistEvent(enabled: boolean) {
             setPushAssistEnabled(enabled);
         }
 
-        function onPushAssistThrottleEvent(throttle: number) {
-            setPushAssistThrottle(throttle);
-        }
-
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
-        socket.on('push_assist_enabled', onPushAssistEnabledEvent);
-        socket.on('push_assist_throttle', onPushAssistThrottleEvent);
+        socket.on('push_assist', onPushAssistEvent);
         socket.on('battery_voltage', onBatteryEvent);
 
         return () => {
             socket.disconnect();
             socket.off('battery_voltage', onBatteryEvent);
-            socket.off('push_assist_enabled', onPushAssistEnabledEvent);
-            socket.off('push_assist_throttle', onPushAssistThrottleEvent);
+            socket.off('push_assist', onPushAssistEvent);
         }
     }
     , []);
 
     const [battery, setBattery] = useState<number | undefined>(undefined);
     const [pushAssistEnabled, setPushAssistEnabled] = useState<boolean>(false);
-    const [pushAssistThrottle, setPushAssistThrottle] = useState<number | undefined>(undefined);
 
     return (
         <div className=" text-white text-sm p-3">
             <BatteryIndicator value={battery}/>
-            <PushAssistIndicator active={pushAssistEnabled} throttle={pushAssistThrottle}/>
+            <PushAssistIndicator active={pushAssistEnabled}/>
             <PowerStateListener />
         </div>
     )

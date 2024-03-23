@@ -4,10 +4,9 @@ import clsx from "clsx";
 
 interface PushAssistIndicatorProps {
     active: boolean;
-    throttle?: number;
 }
 
-export default function PushAssistIndicator({active, throttle}: PushAssistIndicatorProps) {
+export default function PushAssistIndicator({active}: PushAssistIndicatorProps) {
     return (
         <h1 className={
             clsx(
@@ -18,7 +17,7 @@ export default function PushAssistIndicator({active, throttle}: PushAssistIndica
                 }
             )
         }
-        >Push Assist: {active ? `ON (${throttle ?? "???"})` : "OFF"}</h1>
+        >Push Assist: {active ? "ON" : "OFF"}</h1>
     )
 
 }
