@@ -92,13 +92,11 @@ class Spot:
 def h(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
-    print(abs(x1 - x2) + abs(y1 - y2))
     return abs(x1 - x2) + abs(y1 - y2)
 
 def pythagorean(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
-    print(math.sqrt((x1-x2)**2 + (y1-y2)**2))
     return math.sqrt((x1-x2)**2 + (y1-y2)**2)
 
 def create_string(prev_spot, curr_spot, next_spot):
