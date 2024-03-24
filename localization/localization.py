@@ -125,6 +125,7 @@ class Localization:
         try:
             topic, camera_msg = self.camera_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             camera_msg = json.loads(camera_msg)
+            print(camera_msg)
 
             if (camera_msg["pos_x"] is not None) and (camera_msg["pos_y"] is not None) and (camera_msg["angle"] is not None):
                 self.x = camera_msg["pos_x"]
