@@ -183,3 +183,4 @@ if __name__ == "__main__":
 
     while True:
         localizer.update_pose()
+        time.sleep(1 / UPDATE_RATE)
