@@ -29,7 +29,10 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         output_pwm = 0
         topic, adc_msg = adc_sub.recv_string().split(' ', 1)
         topic, push_msg = push_sub.recv_string().split(' ', 1)
+
         right_button, left_button = push_msg.split(',', 1)
+        right_button = 0 if (int(right_button) == 1) else 1
+        left_button = 0 if (int(left_button) == 1) else 1
         print(f"right: {right_button}, left: {left_button}")
 
         try :
@@ -38,15 +41,15 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             pass
 
         serial_msg = "0000000"
-        if push_msg != '0':
+        if push_msg != '0,0':
             #  Calculate PWM for each motor and send to ARDUINO
             chan0, chan1, chan2, chan3 = float(adc_msg["channel0"]), float(adc_msg["channel1"]), float(adc_msg["channel2"]), float(adc_msg["channel3"])
 
             left_dir = 1 if abs(chan2) < THRESHOLD else -1
             right_dir = 1 if abs(chan3) < THRESHOLD else -1
 
-            left = int(left_button)*left_dir
-            right = int(right_button)*right_dir
+            left = left_button*left_dir
+            right = right_button*right_dir
 
             directions = 0
             if left < 0 and right > 0:
