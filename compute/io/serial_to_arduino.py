@@ -50,11 +50,11 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             print(f"left: {left}, right: {right}")
 
             directions = 0
-            if (left < 0) and (right > 0):
+            if (left <= 0) and (right > 0):
                 directions = 1
-            elif (left > 0) and (right < 0):
+            elif (left > 0) and (right <= 0):
                 directions = 2
-            elif (left < 0) and (right < 0):
+            elif (left <= 0) and (right <= 0):
                 directions = 3
             
             print(f"directions: {directions}")
