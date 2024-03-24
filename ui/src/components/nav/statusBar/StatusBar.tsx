@@ -9,7 +9,7 @@ import PowerStateListener from "./PowerStateListener";
 
 interface ServerToClientEvents {
     battery_voltage: (b: number) => void;
-    push_assist: (e: boolean) => void;
+    push_assist: (e: string) => void;
 }
 
 interface ClientToServerEvents {
@@ -22,8 +22,9 @@ export default function StatusBar() {
             setBattery(battery);
         }
 
-        function onPushAssistEvent(enabled: boolean) {
-            setPushAssistEnabled(enabled);
+        function onPushAssistEvent(enabled: string) {
+            const [right, left] = enabled.split(',').map(e => e === '1');
+            setPushAssistEnabled([left!, right!]);
         }
 
         const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(env.NEXT_PUBLIC_SOCKETIO_PORT)
@@ -39,7 +40,7 @@ export default function StatusBar() {
     , []);
 
     const [battery, setBattery] = useState<number | undefined>(undefined);
-    const [pushAssistEnabled, setPushAssistEnabled] = useState<boolean>(false);
+    const [pushAssistEnabled, setPushAssistEnabled] = useState<boolean[]>([false, false]);
 
     return (
         <div className=" text-white text-sm p-3">
