@@ -9,7 +9,7 @@ interface ProductAdditionalInfoProps {
 
 export default function ProductAdditionalInfo({product}: ProductAdditionalInfoProps) {
   return (
-    <div className='p-2 h-full relative'>
+    <div className='p-2 h-full text-lg relative'>
         {product.additionalInfo ? <p>{product.additionalInfo}</p> : <p className='italic'>(No additional info)</p>}
         {product.additionalInfo ? <ExpandedViewText text={product.additionalInfo}/> : null}
     </div>

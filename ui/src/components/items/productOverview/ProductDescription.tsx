@@ -8,7 +8,7 @@ interface ProductDescriptionProps {
 
 export default function ProductDescription({product}: ProductDescriptionProps) {
   return (
-    <div className='p-2 h-full relative'>
+    <div className='p-2 text-lg h-full relative'>
         <p>{product.description}</p>
         <ExpandedViewText text={product.description}/>
     </div>
