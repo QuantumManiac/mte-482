@@ -2,6 +2,7 @@ import zmq
 import json
 import time
 import math
+import matplotlib.pyplot as plt
 
 
 ZMQ_PUB = "tcp://172.20.10.4:5556"
@@ -15,16 +16,19 @@ class Localization:
         # State variables
         self.x = 0
         self.y = 0
+        self.x_log = []
+        self.y_log = []
 
         self.heading = 0
         self.heading_bias = 0
 
         self.vel_x = 0
         self.vel_y = 0
+        self.vel_x_log = []
+        self.vel_y_log = []
 
-        ACCEL_AVG_WINDOW = 5
-        self.accel_x = [0] * ACCEL_AVG_WINDOW
-        self.accel_y = [0] * ACCEL_AVG_WINDOW
+        self.accel_x = [] 
+        self.accel_y = []
         self.accel_window_index = 0
 
         self.accel_x_bias = 0
@@ -55,9 +59,9 @@ class Localization:
         time.sleep(5)
         print("Calibrating IMU ...")
         # determine bias in accelerometer and angle
-        CALIBRATION_DURATION = 3
-        X_EPSILON = 0.1
-        Y_EPSILON = 0.1
+        CALIBRATION_DURATION = 4
+        X_EPSILON = 0.005
+        Y_EPSILON = 0.005
         HEAD_EPSILON = 1
 
         prev_time = time.time()
@@ -114,6 +118,7 @@ class Localization:
 
     def update_pose(self):
         # Check for camera updates
+        EPSILON = 0.05
         camera_heading = None
         try:
             topic, camera_msg = self.camera_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
@@ -134,6 +139,11 @@ class Localization:
 
             accel_x = imu_msg["accel_x"] - self.accel_x_bias
             accel_y = imu_msg["accel_y"] - self.accel_y_bias
+            accel_x = 0 if abs(accel_x) < EPSILON else accel_x
+            accel_y = 0 if abs(accel_y) < EPSILON else accel_y
+
+            self.accel_x.append(accel_x)
+            self.accel_y.append(accel_y)
             print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
 
             # heading calculation
@@ -156,13 +166,21 @@ class Localization:
                 dt = t - self.prev_imu_update_time
                 self.prev_imu_update_time = t
                 
-                self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
-                self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
-                print(f"dx: {(0.5*accel_x*dt*dt) + (self.vel_x*dt)} dy: {(0.5*accel_y*dt*dt) + (self.vel_y*dt)}")
+                # self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
+                # self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
+                self.x += (0.5*accel_x*dt*dt)
+                self.y += (0.5*accel_y*dt*dt)
 
                 self.vel_x += (accel_x*dt)
                 self.vel_y += (accel_y*dt)
+
+                self.vel_x_log.append(self.vel_x)
+                self.vel_y_log.append(self.vel_y)
                 print(f"Vel_x: {self.vel_x}, Vel_y: {self.vel_y}")
+
+                self.x_log.append(self.x)
+                self.y_log.append(self.y)
+                print(f"x: {self.x}, y: {self.y}")
 
         except zmq.Again as e:
             pass
@@ -176,10 +194,47 @@ class Localization:
         
         self.prev_imu_update_time = time.time()
 
+    def plot_kinematics(self):
+        fig, axs = plt.subplots(3, 2, figsize=(10,10))
+
+        axs[0, 0].plot(self.x_log)
+        axs[0, 0].set_title('X')
+
+        axs[0, 1].plot(self.y_log)
+        axs[0, 1].set_title('Y')
+
+        # Plotting vel_x
+        axs[1, 0].plot(self.vel_x_log)
+        axs[1, 0].set_title('Velocity X')
+
+        # Plotting vel_y
+        axs[1, 1].plot(self.vel_y_log)
+        axs[1, 1].set_title('Velocity Y')
+
+        # Plotting accel_x
+        axs[2, 0].plot(self.accel_x)
+        axs[2, 0].set_title('Acceleration X')
+
+        # Plotting accel_y
+        axs[2, 1].plot(self.accel_y)
+        axs[2, 1].set_title('Acceleration Y')
+
+        # Adjust layout
+        plt.tight_layout()
+
+        plt.show()
+
 
 if __name__ == "__main__":
     zmq_context = zmq.Context()
     localizer = Localization(zmq_context)
-    while True:
+
+    localizer.prev_imu_update_time = time.time()
+    localizer.prev_publish_time = time.time()
+    start_time = time.time()
+
+    while (time.time() - start_time) < 20:
         localizer.update_pose()
         time.sleep(1 / 1000)
+
+    localizer.plot_kinematics()
