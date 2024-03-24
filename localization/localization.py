@@ -235,8 +235,8 @@ if __name__ == "__main__":
     localizer.prev_publish_time = time.time()
     start_time = time.time()
 
-    while (time.time() - start_time) < 20:
+    while True:
         localizer.update_pose()
         time.sleep(1 / 1000)
 
-    localizer.plot_kinematics()
+    # localizer.plot_kinematics()
