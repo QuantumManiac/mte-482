@@ -161,6 +161,8 @@ class Localization:
                     self.heading -= 360
                 elif self.heading < -180:
                     self.heading += 360
+                
+                print(f"heading: {self.heading}")
 
                 # dead reckoning
                 t = time.time()
