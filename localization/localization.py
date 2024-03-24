@@ -180,6 +180,6 @@ class Localization:
 if __name__ == "__main__":
     zmq_context = zmq.Context()
     localizer = Localization(zmq_context)
-
     while True:
         localizer.update_pose()
+        time.sleep(1 / 1000)
