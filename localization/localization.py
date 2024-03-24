@@ -12,6 +12,8 @@ UPDATE_RATE = 3  # Hz
 class Localization:
     X_OFFSET = 1
     Y_OFFSET = 1
+    X_SCALE = 3
+    Y_SCALE = 3
     def __init__(self, context) -> None:
         # State variables
         self.x = 0
@@ -137,8 +139,8 @@ class Localization:
             topic, imu_msg = self.imu_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             imu_msg = json.loads(imu_msg)
 
-            accel_x = imu_msg["accel_x"] - self.accel_x_bias
-            accel_y = imu_msg["accel_y"] - self.accel_y_bias
+            accel_x = Localization.X_SCALE*(imu_msg["accel_x"] - self.accel_x_bias)
+            accel_y = Localization.Y_SCALE*(imu_msg["accel_y"] - self.accel_y_bias)
             accel_x = 0 if abs(accel_x) < EPSILON else accel_x
             accel_y = 0 if abs(accel_y) < EPSILON else accel_y
 
