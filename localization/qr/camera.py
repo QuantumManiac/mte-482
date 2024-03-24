@@ -6,7 +6,7 @@ import zmq
 import json
 
 
-SHOW_VIDEO = False
+SHOW_VIDEO = True
 ZMQ_PUB = "tcp://172.20.10.4:5556"
 
 
@@ -50,7 +50,7 @@ def process_frame(frame, qr):
     if cart_angle > 180:
         cart_angle = -(qr_angle+180)  # make it 0 -> +-180
 
-    return frame, pos_x, pos_y, angle
+    return frame, pos_x, pos_y, cart_angle
 
 
 if __name__ == "__main__":
@@ -87,6 +87,7 @@ if __name__ == "__main__":
             prev = time.time()
             try:
                 processed_frame, pos_x, pos_y, angle = process_frame(frame, qr)
+                print(f"pos_x: {pos_x}, pos_y: {pos_y}, angle: {angle}")
                 # Publish the resulting position and angle
                 if (pos_x is not None) and (pos_y is not None) and (angle is not None):
                     msg = {
