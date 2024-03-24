@@ -95,7 +95,7 @@ if __name__ == "__main__":
                         "angle": float(angle)
                     }
                     pub.send_string(f"qr {json.dumps(msg)}")
-                    # print(f"angle: {angle} position: {pos_x} {pos_y}")
+                    print(f"angle: {angle} position: {pos_x} {pos_y}")
             except Exception as e:  # Sometimes the camera hallucinates QR codes when there are none, this prevents crashing
                 print(f"Some camera exception: {e}, continuing")
                 continue
