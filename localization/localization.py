@@ -194,8 +194,6 @@ class Localization:
             self.pose_pub.send_string(f"localization {self.x + Localization.X_OFFSET},{-self.y + Localization.Y_OFFSET},{heading}")
             self.prev_publish_time = time.time()
         
-        self.prev_imu_update_time = time.time()
-
     def plot_kinematics(self):
         fig, axs = plt.subplots(3, 2, figsize=(10,10))
 
