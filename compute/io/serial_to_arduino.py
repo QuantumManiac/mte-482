@@ -50,13 +50,14 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             print(f"left: {left}, right: {right}")
 
             directions = 0
-            print(f"Left: {left>0}, Right: {right>0}")
             if (left < 0) and (right > 0):
                 directions = 1
             elif (left > 0) and (right < 0):
                 directions = 2
             elif (left < 0) and (right < 0):
                 directions = 3
+            
+            print(f"directions: {directions}")
             
 
             left_pwm = int(min(PWM_MAX, abs(K*PWM_MAX*left)))  # Get PWM, clip at PWM_MAX
