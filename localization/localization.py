@@ -9,6 +9,8 @@ ZMQ_SUB = "tcp://172.20.10.4:5555"
 UPDATE_RATE = 3  # Hz
 
 class Localization:
+    X_OFFSET = 1
+    Y_OFFSET = 1
     def __init__(self, context) -> None:
         # State variables
         self.x = 0
@@ -168,7 +170,8 @@ class Localization:
         # Publish new localization data
         if (time.time() - self.prev_publish_time) > (1/UPDATE_RATE):
             heading = 360+self.heading if self.heading < 0 else self.heading  # Convert heading to 0 -> 359 range
-            self.pose_pub.send_string(f"localization {self.x},{self.y},{heading}")
+            # Since imu has a coordinate system of y pointing up and navigation has y pointing down, we need to negate y
+            self.pose_pub.send_string(f"localization {self.x + Localization.X_OFFSET},{-self.y + Localization.Y_OFFSET},{heading}")
             self.prev_publish_time = time.time()
         
         self.prev_imu_update_time = time.time()
