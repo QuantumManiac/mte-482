@@ -5,7 +5,7 @@ tmux new-session -d -s $SESSION_NAME
 # List of your Python scripts
 SCRIPTS=(
     "cd ui && yarn start"
-    "cd compute/zeromq && source venv/bin/activate && python proxy.py"
+    "cd compute/zeromq && source venv/bin/activate && python proxy.py --print-messages"
     "cd localization && source venv/bin/activate && python localization.py"
     "cd navigation && source venv/bin/activate && python navigation.py"
     )

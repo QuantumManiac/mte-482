@@ -269,6 +269,8 @@ def main():
     sub.connect("tcp://127.0.0.1:5555")
     sub.setsockopt(zmq.SUBSCRIBE, b"localization")
 
+    print("Starting navigation process...")
+
     session = init_session()
     with session.begin():
         session.query(NavigationState).delete()
