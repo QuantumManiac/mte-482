@@ -31,8 +31,6 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         topic, push_msg = push_sub.recv_string().split(' ', 1)
 
         right_button, left_button = push_msg.split(',', 1)
-        right_button = 0 if (int(right_button) == 1) else 1
-        left_button = 0 if (int(left_button) == 1) else 1
 
         try :
             adc_msg: dict = json.loads(adc_msg)
@@ -48,8 +46,8 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             right_dir = 1 if abs(chan3) < THRESHOLD else -1
             print(f"left_dir: {left_dir}, right_dir: {right_dir}")
 
-            left = left_button*left_dir
-            right = right_button*right_dir
+            left = int(left_button)*left_dir
+            right = int(right_button)*right_dir
 
             directions = 0
             if left < 0 and right > 0:
