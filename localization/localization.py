@@ -10,8 +10,8 @@ ZMQ_SUB = "tcp://172.20.10.4:5555"
 UPDATE_RATE = 3  # Hz
 
 class Localization:
-    X_SCALE = 3
-    Y_SCALE = 3
+    X_SCALE = 10
+    Y_SCALE = 10
     def __init__(self, context) -> None:
         # State variables
         self.x = 1
@@ -128,7 +128,7 @@ class Localization:
             if (camera_msg["pos_x"] is not None) and (camera_msg["pos_y"] is not None) and (camera_msg["angle"] is not None):
                 self.x = camera_msg["pos_x"]
                 self.y = camera_msg["pos_y"]
-                camera_heading = camera_msg["angle"]
+                # camera_heading = camera_msg["angle"]
 
         except zmq.Again as e:
             pass
@@ -150,9 +150,9 @@ class Localization:
             # heading calculation
             if (accel_x is not None and accel_y is not None):
                 self.heading = self.calculate_imu_heading(imu_msg["quat_real"], imu_msg["quat_i"], imu_msg["quat_j"], imu_msg["quat_k"])
-                if camera_heading is not None:
-                    # update the heading correction factor
-                    self.heading_bias = self.heading - camera_heading
+                # if camera_heading is not None:
+                #     # update the heading correction factor
+                #     self.heading_bias = self.heading - camera_heading
                 
                 print(f"heading: {self.heading - self.heading_bias}")
 
