@@ -190,7 +190,7 @@ class Localization:
         if (time.time() - self.prev_publish_time) > (1/UPDATE_RATE):
             heading = 360+self.heading if self.heading < 0 else self.heading  # Convert heading to 0 -> 359 range
             # Since imu has a coordinate system of y pointing up and navigation has y pointing down, we need to negate y
-            self.pose_pub.send_string(f"localization {self.x},{-self.y},{heading}")
+            self.pose_pub.send_string(f"localization {self.x},{self.y},{heading}")
             self.prev_publish_time = time.time()
         
     def plot_kinematics(self):
