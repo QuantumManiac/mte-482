@@ -38,7 +38,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             pass
 
         serial_msg = "0000000"
-        if push_msg != '1,1':
+        if push_msg != '0,0':
             #  Calculate PWM for each motor and send to ARDUINO
             chan0, chan1, chan2, chan3 = float(adc_msg["channel0"]), float(adc_msg["channel1"]), float(adc_msg["channel2"]), float(adc_msg["channel3"])
 
@@ -70,7 +70,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
                 case 3:
                     print(f"Pushing - Left: -{left_pwm}, Right: -{right_pwm}")
 
-            serial_msg = f"{right_pwm:03}{left_pwm:03}{directions}" # msd lllrrrd lsd (e.g. 1801802)
+            serial_msg = f"{left_pwm:03}{right_pwm:03}{directions}" # msd lllrrrd lsd (e.g. 1801802)
 
         print(serial_msg)
         uart.write(f'{serial_msg}\n'.encode())
