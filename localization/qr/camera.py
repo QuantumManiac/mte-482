@@ -6,7 +6,7 @@ import zmq
 import json
 
 
-SHOW_VIDEO = True
+SHOW_VIDEO = False
 ZMQ_PUB = "tcp://172.20.10.4:5556"
 
 
