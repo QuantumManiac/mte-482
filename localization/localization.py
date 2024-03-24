@@ -2,7 +2,7 @@ import zmq
 import json
 import time
 import math
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 ZMQ_PUB = "tcp://172.20.10.4:5556"
