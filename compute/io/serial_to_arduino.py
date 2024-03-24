@@ -42,8 +42,8 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             #  Calculate PWM for each motor and send to ARDUINO
             chan0, chan1, chan2, chan3 = float(adc_msg["channel0"]), float(adc_msg["channel1"]), float(adc_msg["channel2"]), float(adc_msg["channel3"])
 
-            left_dir = 1 if abs(chan1) < THRESHOLD else -1
-            right_dir = 1 if abs(chan3) < THRESHOLD else -1
+            left_dir = 1 if abs(chan3) < THRESHOLD else -1
+            right_dir = 1 if abs(chan1) < THRESHOLD else -1
 
             left = int(left_button)*left_dir
             right = int(right_button)*right_dir
