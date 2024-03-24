@@ -10,14 +10,12 @@ ZMQ_SUB = "tcp://172.20.10.4:5555"
 UPDATE_RATE = 3  # Hz
 
 class Localization:
-    X_OFFSET = 1
-    Y_OFFSET = 1
     X_SCALE = 3
     Y_SCALE = 3
     def __init__(self, context) -> None:
         # State variables
-        self.x = 0
-        self.y = 0
+        self.x = 1
+        self.y = 1
         self.x_log = []
         self.y_log = []
 
@@ -125,7 +123,7 @@ class Localization:
         try:
             topic, camera_msg = self.camera_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             camera_msg = json.loads(camera_msg)
-            print(camera_msg)
+            print(f"Localization received camera msg: {camera_msg}")
 
             if (camera_msg["pos_x"] is not None) and (camera_msg["pos_y"] is not None) and (camera_msg["angle"] is not None):
                 self.x = camera_msg["pos_x"]
@@ -192,7 +190,7 @@ class Localization:
         if (time.time() - self.prev_publish_time) > (1/UPDATE_RATE):
             heading = 360+self.heading if self.heading < 0 else self.heading  # Convert heading to 0 -> 359 range
             # Since imu has a coordinate system of y pointing up and navigation has y pointing down, we need to negate y
-            self.pose_pub.send_string(f"localization {self.x + Localization.X_OFFSET},{-self.y + Localization.Y_OFFSET},{heading}")
+            self.pose_pub.send_string(f"localization {self.x},{-self.y},{heading}")
             self.prev_publish_time = time.time()
         
     def plot_kinematics(self):
