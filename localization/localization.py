@@ -154,15 +154,7 @@ class Localization:
                     # update the heading correction factor
                     self.heading_bias = self.heading - camera_heading
                 
-                self.heading -= self.heading_bias  # fix to camera value (global absolute)
-
-                # Maintain heading within specified range
-                if self.heading > 180:
-                    self.heading -= 360
-                elif self.heading < -180:
-                    self.heading += 360
-                
-                print(f"heading: {self.heading}")
+                print(f"heading: {self.heading - self.heading_bias}")
 
                 # dead reckoning
                 t = time.time()
@@ -190,9 +182,15 @@ class Localization:
 
         # Publish new localization data
         if (time.time() - self.prev_publish_time) > (1/UPDATE_RATE):
-            heading = 360+self.heading if self.heading < 0 else self.heading  # Convert heading to 0 -> 359 range
+            pub_heading = self.heading - self.heading_bias
+            if pub_heading > 180:
+                pub_heading -= 360
+            elif pub_heading < -180:
+                pub_heading += 360
+
+            pub_heading = 360+pub_heading if pub_heading < 0 else pub_heading  # Convert heading to 0 -> 359 range
             # Since imu has a coordinate system of y pointing up and navigation has y pointing down, we need to negate y
-            self.pose_pub.send_string(f"localization {self.x},{self.y},{heading}")
+            self.pose_pub.send_string(f"localization {self.x},{self.y},{pub_heading}")
             self.prev_publish_time = time.time()
         
     def plot_kinematics(self):
