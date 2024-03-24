@@ -23,7 +23,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
     MAX_VOLTAGE = 5  # Volts
     PWM_LIMIT = 0.81  # 0.81 is motor driver PWM limit
     PWM_MAX = math.floor(255 * PWM_LIMIT)  
-    K = 1
+    K = 2
 
     while True:
         output_pwm = 0
