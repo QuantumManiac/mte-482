@@ -69,24 +69,24 @@ def des_loc(start_x, start_y, end_x, end_y, heading):
     if des_heading != heading:
         if des_heading == 0:
             if heading <= 180:
-                direction = "right"
-            else:
                 direction = "left"
+            else:
+                direction = "right"
         elif des_heading == 90:
             if heading > 90 and heading <= 270:
-                direction = "right"
-            else:
                 direction = "left"
+            else:
+                direction = "right"
         elif des_heading == 180:
             if heading > 180 and heading < 360:
-                direction = "right"
-            else:
                 direction = "left"
+            else:
+                direction = "right"
         elif des_heading == 270:
             if heading < 90 and heading > 270:
-                direction = "right"
-            else:
                 direction = "left"
+            else:
+                direction = "right"
     else:
         direction = "straight"
 
@@ -110,7 +110,7 @@ def calculate_route(state: NavigationState, pub: zmq.Socket):
 
     dist_to_next = dist_calc(start_x, start_y, end_x, end_y)
 
-    if dist_to_next == 1:
+    if dist_to_next <= 1:
         next_step, heading = des_loc(start_x, start_y, end_x, end_y, state.heading)
         end = grid[end_x][end_y]
         # is_barrier = end.is_barrier()

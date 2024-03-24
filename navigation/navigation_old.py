@@ -125,37 +125,21 @@ def des_loc(last_point, second_last, third_last):
     v2y = last_point.col - second_last.col
     direction = ""
     if (v1x*v2y - v1y*v2x) > 0:
-        direction = "left"
-    elif (v1x*v2y - v1y*v2x) < 0:
         direction = "right"
+    elif (v1x*v2y - v1y*v2x) < 0:
+        direction = "left"
 
     return direction
 
-def print_path(came_from, next_points, current, barrier):
+def print_path(came_from, next_points, current, end, barrier):
     to_aisle = ""
-    # count = 0
-    # # chamath pls ignore how bad this is i just need to access the last three points
-    # # this is also coded assuming the user isnt trying to navigate to a point right next to them ... or this wont work 
-    # last_point = current
-    # second_last = current
-    # third_last = current
-    # max = len(next_points) - 1
-    # for i in came_from:
-    #     if count == 0:
-    #         last_point = came_from[i]
-    #         second_last = next_points[i]
-    #         count += 1
-    #     if count == 1:
-    #         third_last = next_points[i]
-    #         count += 1
-    
-    # to_aisle = des_loc(last_point, second_last, third_last)
-
     path_str = ""
     path = []
     turn_dir = []
     temp = ""
     prev_spot = current
+    last_spot = end
+    found = True
     count = 0
     dir = []
     with open(create_path, 'w') as file:
@@ -167,22 +151,35 @@ def print_path(came_from, next_points, current, barrier):
             try:
                 next_spot = next_points[current]
             except:
+                found = False
                 print("end")
             if count == 0:
                     if (barrier):
                         to_aisle = des_loc(prev_spot, current, next_spot)
                         arrived = f"{current.row},{current.col},arrive_{to_aisle}"
                         path.insert(0, current)
+                        path_str = arrived
+                        turn_dir.append("Arrived!")
                     else:
                         to_aisle = "straight"
                         arrived = f"{prev_spot.row},{prev_spot.col},arrive_{to_aisle}"
                         path.insert(0, prev_spot)
+                        if found:
+                            temp, temp_str, dir, turned = create_string(prev_spot, current, next_spot)
+                        else:
+                            temp, temp_str, dir, turned = create_string(prev_spot, current, last_spot)
+                        if turned:
+                            print(turned)
+                            path_str = temp_str + path_str
+                            path.insert(0, temp)
+                            turn_dir.insert(0, dir)
+                        path_str = path_str + arrived
+                        turn_dir.append("Arrived!")
+                        if turned:
+                            turn_dir.insert(0, dir)
                     
                     # arrival = [(current.row), (current.col)]
                     
-                    path_str = arrived
-                    turn_dir.append("Arrived!")
-
             # current.make_path()
             if count >= 1:
                 temp, temp_str, dir, turned = create_string(prev_spot, current, next_spot)
@@ -191,7 +188,6 @@ def print_path(came_from, next_points, current, barrier):
                 # file.write(temp)
                 if turned:
                     print(turned)
-                    temp_arr = [(temp.row), (temp.col)]
                     path_str = temp_str + path_str
                     path.insert(0, temp)
                     turn_dir.insert(0, dir)
@@ -222,13 +218,17 @@ def make_rectangle_barrier(grid, x, y, width, height):
 def make_set_barrier(grid):
     length_x = 17
     length_y = 2
-    div_rows = [2, 5, 8, 11, 14, 17]
+    div_first_col = [2, 11, 20, 29]
+    div_rows = [5, 8, 11, 14, 17]
     div_cols = [2, 20]
     # LAST_ROW = 77
 
+    for div_col in div_first_col:
+        make_rectangle_barrier(grid, div_col, 2, 8, length_y)
+
     # Make the border of the grid barriers
     make_border(grid)
-
+    
     # Make the rectangle barriers
     for div_row in div_rows:
         for div_col in div_cols:
@@ -276,13 +276,14 @@ def algorithm(grid, start, end, is_barrier):
             # for x in came_from:
             #     formatted = f"came_from:row {x.row}, came_from:col {x.col}"
             #     print(formatted)
-            next_points.popitem()
+            if len(next_points) > 0:
+                next_points.popitem()
             # for x in next_points:
             #     formatted = f"next:row {x.row}, next:col {x.col}"
             #     print(formatted)
             
             reconstruct_path(came_from, end)
-            path_str, path, directions = print_path(came_from, next_points, end, is_barrier)
+            path_str, path, directions = print_path(came_from, next_points, end, end, is_barrier)
             end.make_end()
             print("ended")
             return True, path, path_str, directions
