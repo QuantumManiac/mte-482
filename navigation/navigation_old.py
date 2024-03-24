@@ -151,13 +151,8 @@ def print_path(came_from, next_points, current, end, barrier):
             try:
                 next_spot = next_points[current]
             except:
-<<<<<<< HEAD
                 found = False
                 print("end")
-=======
-                pass
-                # print("end")
->>>>>>> e345cfd0791e9a588c6288af75dd9a76dd5b78ba
             if count == 0:
                     if (barrier):
                         to_aisle = des_loc(prev_spot, current, next_spot)
@@ -192,12 +187,7 @@ def print_path(came_from, next_points, current, end, barrier):
                 # print(temp.col)
                 # file.write(temp)
                 if turned:
-<<<<<<< HEAD
                     print(turned)
-=======
-                    # print(turned)
-                    temp_arr = [(temp.row), (temp.col)]
->>>>>>> e345cfd0791e9a588c6288af75dd9a76dd5b78ba
                     path_str = temp_str + path_str
                     path.insert(0, temp)
                     turn_dir.insert(0, dir)
@@ -257,7 +247,7 @@ def reconstruct_path(came_from, current):
             file.write(formatted)
             
 def algorithm(grid, start, end, is_barrier):
-    # print(f'is barrier: {is_barrier}')
+    print(f'is barrier: {is_barrier}')
     for row in grid:
         for spot in row:
             spot.update_neighbors(grid)
@@ -279,9 +269,9 @@ def algorithm(grid, start, end, is_barrier):
         
         open_set_hash.remove(current) # remove from open set
         formatted = f"current:row {current.row}, current:col {current.col}"
-        # print(formatted)
+        print(formatted)
         if current == end:
-            # print("equals")
+            print("equals")
             next_points = came_from.copy()
             # for x in came_from:
             #     formatted = f"came_from:row {x.row}, came_from:col {x.col}"
@@ -295,7 +285,7 @@ def algorithm(grid, start, end, is_barrier):
             reconstruct_path(came_from, end)
             path_str, path, directions = print_path(came_from, next_points, end, end, is_barrier)
             end.make_end()
-            # print("ended")
+            print("ended")
             return True, path, path_str, directions
 
         for neighbor in current.neighbors:
