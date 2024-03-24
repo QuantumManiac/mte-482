@@ -33,7 +33,6 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         right_button, left_button = push_msg.split(',', 1)
         right_button = 0 if (int(right_button) == 1) else 1
         left_button = 0 if (int(left_button) == 1) else 1
-        print(f"right: {right_button}, left: {left_button}")
 
         try :
             adc_msg: dict = json.loads(adc_msg)
@@ -62,7 +61,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
 
             left_pwm = int(min(PWM_MAX, abs(K*PWM_MAX*left)))  # Get PWM, clip at PWM_MAX
             right_pwm = int(min(PWM_MAX, abs(K*PWM_MAX*right)))  # Get PWM, clip at PWM_MAX
-            print(f"direction: {directions}")
+
             match directions:
                 case 0:
                     print(f"Pushing - Left: {left_pwm}, Right: {right_pwm}")
