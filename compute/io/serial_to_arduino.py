@@ -72,7 +72,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
                 case 3:
                     print(f"Pushing - Left: -{left_pwm}, Right: -{right_pwm}")
 
-            serial_msg = directions + 10*right_pwm + left_pwm*10000  # msd lllrrrd lsd (e.g. 1801802)
+            serial_msg = f"{left_pwm:03}{right_pwm:03}{directions}" # msd lllrrrd lsd (e.g. 1801802)
 
         print(serial_msg)
         uart.write(f'{serial_msg}\n'.encode())
