@@ -47,6 +47,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
 
             left_dir = 1 if abs(chan2) < THRESHOLD else -1
             right_dir = 1 if abs(chan3) < THRESHOLD else -1
+            print(f"left_dir: {left_dir}, right_dir: {right_dir}")
 
             left = left_button*left_dir
             right = right_button*right_dir
