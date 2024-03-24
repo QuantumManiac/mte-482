@@ -30,6 +30,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
         topic, adc_msg = adc_sub.recv_string().split(' ', 1)
         topic, push_msg = push_sub.recv_string().split(' ', 1)
         right_button, left_button = push_msg.split(',', 1)
+        print(f"right: {right_button}, left: {left_button}")
 
         try :
             adc_msg: dict = json.loads(adc_msg)
@@ -71,7 +72,7 @@ def zmq_to_serial(context: zmq.Context, uart_port: str):
             serial_msg = f"{left_pwm:03}{right_pwm:03}{directions}" # msd lllrrrd lsd (e.g. 1801802)
 
         print(serial_msg)
-        uart.write(f'{serial_msg}\n'.encode())
+        # uart.write(f'{serial_msg}\n'.encode())
 
 
 if __name__ == '__main__':

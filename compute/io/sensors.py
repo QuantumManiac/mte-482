@@ -49,8 +49,8 @@ def rfid(zmq: zmq.Context, i2c: busio.I2C):
 def pushbutton(zmq: zmq.Context):
     pin_right = gpiozero.InputDevice(17, pull_up=True)
     pin_left = gpiozero.InputDevice(18, pull_up=True)
-    pin_right = 1 if pin_right.value else 0
-    pin_left = 1 if pin_left.value else 0
+    pin_right = 0 if pin_right.value else 1
+    pin_left = 0 if pin_left.value else 1
     pub = setup_zmq_pub(zmq)
 
     while True:
