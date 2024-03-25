@@ -10,14 +10,12 @@ ZMQ_SUB = "tcp://172.20.10.4:5555"
 UPDATE_RATE = 3  # Hz
 
 class Localization:
-    X_OFFSET = 1
-    Y_OFFSET = 1
-    X_SCALE = 3
-    Y_SCALE = 3
+    X_SCALE = 5
+    Y_SCALE = 5
     def __init__(self, context) -> None:
         # State variables
-        self.x = 0
-        self.y = 0
+        self.x = 1
+        self.y = 1
         self.x_log = []
         self.y_log = []
 
@@ -125,11 +123,12 @@ class Localization:
         try:
             topic, camera_msg = self.camera_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             camera_msg = json.loads(camera_msg)
+            print(f"Localization received camera msg: {camera_msg}")
 
             if (camera_msg["pos_x"] is not None) and (camera_msg["pos_y"] is not None) and (camera_msg["angle"] is not None):
                 self.x = camera_msg["pos_x"]
                 self.y = camera_msg["pos_y"]
-                camera_heading = camera_msg["angle"]
+                # camera_heading = camera_msg["angle"]
 
         except zmq.Again as e:
             pass
@@ -139,63 +138,61 @@ class Localization:
             topic, imu_msg = self.imu_sub.recv_string(flags=zmq.NOBLOCK).split(' ', 1)
             imu_msg = json.loads(imu_msg)
 
-            accel_x = Localization.X_SCALE*(imu_msg["accel_x"] - self.accel_x_bias)
-            accel_y = Localization.Y_SCALE*(imu_msg["accel_y"] - self.accel_y_bias)
-            accel_x = 0 if abs(accel_x) < EPSILON else accel_x
-            accel_y = 0 if abs(accel_y) < EPSILON else accel_y
+            accel_x = (imu_msg["accel_x"] - self.accel_x_bias)
+            accel_y = (imu_msg["accel_y"] - self.accel_y_bias)
+            accel_x = 0 if abs(accel_x) < EPSILON else Localization.X_SCALE*accel_x
+            accel_y = 0 if abs(accel_y) < EPSILON else Localization.Y_SCALE*accel_y
 
-            self.accel_x.append(accel_x)
-            self.accel_y.append(accel_y)
-            print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
+            # self.accel_x.append(accel_x)
+            # self.accel_y.append(accel_y)
+            # print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
 
             # heading calculation
             if (accel_x is not None and accel_y is not None):
                 self.heading = self.calculate_imu_heading(imu_msg["quat_real"], imu_msg["quat_i"], imu_msg["quat_j"], imu_msg["quat_k"])
-                if camera_heading is not None:
-                    # update the heading correction factor
-                    self.heading_bias = self.heading - camera_heading
+                # if camera_heading is not None:
+                #     # update the heading correction factor
+                #     self.heading_bias = self.heading - camera_heading
                 
-                self.heading -= self.heading_bias  # fix to camera value (global absolute)
-
-                # Maintain heading within specified range
-                if self.heading > 180:
-                    self.heading -= 360
-                elif self.heading < -180:
-                    self.heading += 360
+                print(f"heading: {self.heading - self.heading_bias}")
 
                 # dead reckoning
                 t = time.time()
-                dt = t - self.prev_imu_update_time
+                # dt = t - self.prev_imu_update_time
                 self.prev_imu_update_time = t
                 
                 # self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
                 # self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
-                self.x += (0.5*accel_x*dt*dt)
-                self.y += (0.5*accel_y*dt*dt)
+                # self.x += (0.5*accel_x*dt*dt + self.vel_x*dt)
+                # self.y += (0.5*accel_y*dt*dt + self.vel_y*dt)
 
-                self.vel_x += (accel_x*dt)
-                self.vel_y += (accel_y*dt)
+                # self.vel_x += (accel_x*dt)
+                # self.vel_y += (accel_y*dt)
 
-                self.vel_x_log.append(self.vel_x)
-                self.vel_y_log.append(self.vel_y)
-                print(f"Vel_x: {self.vel_x}, Vel_y: {self.vel_y}")
+                # self.vel_x_log.append(self.vel_x)
+                # self.vel_y_log.append(self.vel_y)
+                # print(f"Vel_x: {self.vel_x}, Vel_y: {self.vel_y}")
 
-                self.x_log.append(self.x)
-                self.y_log.append(self.y)
-                print(f"x: {self.x}, y: {self.y}")
+                # self.x_log.append(self.x)
+                # self.y_log.append(self.y)
+                # print(f"x: {self.x}, y: {self.y}")
 
         except zmq.Again as e:
             pass
 
         # Publish new localization data
         if (time.time() - self.prev_publish_time) > (1/UPDATE_RATE):
-            heading = 360+self.heading if self.heading < 0 else self.heading  # Convert heading to 0 -> 359 range
+            pub_heading = self.heading - self.heading_bias
+            if pub_heading > 180:
+                pub_heading -= 360
+            elif pub_heading < -180:
+                pub_heading += 360
+
+            pub_heading = 360+pub_heading if pub_heading < 0 else pub_heading  # Convert heading to 0 -> 359 range
             # Since imu has a coordinate system of y pointing up and navigation has y pointing down, we need to negate y
-            self.pose_pub.send_string(f"localization {self.x + Localization.X_OFFSET},{-self.y + Localization.Y_OFFSET},{heading}")
+            self.pose_pub.send_string(f"localization {self.x},{self.y},{pub_heading}")
             self.prev_publish_time = time.time()
         
-        self.prev_imu_update_time = time.time()
-
     def plot_kinematics(self):
         fig, axs = plt.subplots(3, 2, figsize=(10,10))
 
@@ -235,8 +232,8 @@ if __name__ == "__main__":
     localizer.prev_publish_time = time.time()
     start_time = time.time()
 
-    while (time.time() - start_time) < 20:
+    while True:
         localizer.update_pose()
         time.sleep(1 / 1000)
 
-    localizer.plot_kinematics()
+    # localizer.plot_kinematics()

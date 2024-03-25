@@ -276,6 +276,8 @@ def main():
         session.add(NavigationState(id=0, currentX=1, currentY=1, state=NavState.IDLE.value))
         session.commit()
 
+    print("Starting navigation process...")
+
     # Update state every 300ms
     while True:
         update_localization_state_to_db(sub)

@@ -50,7 +50,7 @@ def process_frame(frame, qr):
     if cart_angle > 180:
         cart_angle = -(qr_angle+180)  # make it 0 -> +-180
 
-    return frame, pos_x, pos_y, angle
+    return frame, pos_x, pos_y, cart_angle
 
 
 if __name__ == "__main__":
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     pub.connect(ZMQ_PUB)
 
     # Set runtime parameters
-    FRAME_RATE = 5
+    FRAME_RATE = 15
 
     # Start capturing video from the default camera (index 0)
     cap = cv2.VideoCapture(0)
@@ -87,6 +87,7 @@ if __name__ == "__main__":
             prev = time.time()
             try:
                 processed_frame, pos_x, pos_y, angle = process_frame(frame, qr)
+                print(f"pos_x: {pos_x}, pos_y: {pos_y}, angle: {angle}")
                 # Publish the resulting position and angle
                 if (pos_x is not None) and (pos_y is not None) and (angle is not None):
                     msg = {
@@ -95,7 +96,7 @@ if __name__ == "__main__":
                         "angle": float(angle)
                     }
                     pub.send_string(f"qr {json.dumps(msg)}")
-                    # print(f"angle: {angle} position: {pos_x} {pos_y}")
+                    print(f"angle: {angle} position: {pos_x} {pos_y}")
             except Exception as e:  # Sometimes the camera hallucinates QR codes when there are none, this prevents crashing
                 print(f"Some camera exception: {e}, continuing")
                 continue
