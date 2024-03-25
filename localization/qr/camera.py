@@ -60,7 +60,7 @@ if __name__ == "__main__":
     pub.connect(ZMQ_PUB)
 
     # Set runtime parameters
-    FRAME_RATE = 5
+    FRAME_RATE = 30
 
     # Start capturing video from the default camera (index 0)
     cap = cv2.VideoCapture(0)
