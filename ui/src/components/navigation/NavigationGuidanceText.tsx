@@ -11,7 +11,7 @@ export default function NavigationGuidanceText({navigationState}: GuidanceTextPr
         switch (navigationState.nextStep) {
             case "arrive_left":
                  return [`Destination on left in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
-            case "arrive_left":
+            case "arrive_right":
                  return [`Destination on right in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
             case "arrive":
                  return [`Destination in ${navigationState.distToNextStep?.toFixed(1)} m`, "🏁"]
