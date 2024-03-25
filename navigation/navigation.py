@@ -171,6 +171,7 @@ def update_navigation_state(state: NavigationState, pub: zmq.Socket):
         # state.distToNextStep = 5
         state.distToNextStep = dist_to_next
         path = []
+        notification = NavMessages.CANCELLED
     else:
         # curr_pos = [(currentX), (currentY)]
         # next_turn = [(path[0].y), (path[0].x)]

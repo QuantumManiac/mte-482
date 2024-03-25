@@ -155,11 +155,15 @@ def print_path(came_from, next_points, current, end, barrier):
                 print("end")
             if count == 0:
                     if (barrier):
-                        to_aisle = des_loc(prev_spot, current, next_spot)
+                        if found:
+                            to_aisle = des_loc(prev_spot, current, next_spot)
+                        else:
+                            to_aisle = des_loc(prev_spot, current, last_spot)
+                        
                         arrived = f"{current.row},{current.col},arrive_{to_aisle}"
                         path.insert(0, current)
                         path_str = arrived
-                        turn_dir.append("Arrived!")
+                        turn_dir.append(f'arrive_{to_aisle}')
                     else:
                         to_aisle = "straight"
                         arrived = f"{prev_spot.row},{prev_spot.col},arrive_{to_aisle}"
@@ -174,7 +178,7 @@ def print_path(came_from, next_points, current, end, barrier):
                             path.insert(0, temp)
                             turn_dir.insert(0, dir)
                         path_str = path_str + arrived
-                        turn_dir.append("Arrived!")
+                        turn_dir.append("arrived")
                         if turned:
                             turn_dir.insert(0, dir)
                     
