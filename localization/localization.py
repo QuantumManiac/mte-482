@@ -10,8 +10,8 @@ ZMQ_SUB = "tcp://172.20.10.4:5555"
 UPDATE_RATE = 3  # Hz
 
 class Localization:
-    X_SCALE = 10
-    Y_SCALE = 10
+    X_SCALE = 5
+    Y_SCALE = 5
     def __init__(self, context) -> None:
         # State variables
         self.x = 1
@@ -143,9 +143,9 @@ class Localization:
             accel_x = 0 if abs(accel_x) < EPSILON else Localization.X_SCALE*accel_x
             accel_y = 0 if abs(accel_y) < EPSILON else Localization.Y_SCALE*accel_y
 
-            self.accel_x.append(accel_x)
-            self.accel_y.append(accel_y)
-            print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
+            # self.accel_x.append(accel_x)
+            # self.accel_y.append(accel_y)
+            # print(f"Accel_x: {accel_x}, Accel_y: {accel_y}")
 
             # heading calculation
             if (accel_x is not None and accel_y is not None):
@@ -158,24 +158,24 @@ class Localization:
 
                 # dead reckoning
                 t = time.time()
-                dt = t - self.prev_imu_update_time
+                # dt = t - self.prev_imu_update_time
                 self.prev_imu_update_time = t
                 
                 # self.x += ((0.5*accel_x*dt*dt) + (self.vel_x*dt))
                 # self.y += ((0.5*accel_y*dt*dt) + (self.vel_y*dt))
-                self.x += (0.5*accel_x*dt*dt)
-                self.y += (0.5*accel_y*dt*dt)
+                # self.x += (0.5*accel_x*dt*dt + self.vel_x*dt)
+                # self.y += (0.5*accel_y*dt*dt + self.vel_y*dt)
 
-                self.vel_x += (accel_x*dt)
-                self.vel_y += (accel_y*dt)
+                # self.vel_x += (accel_x*dt)
+                # self.vel_y += (accel_y*dt)
 
-                self.vel_x_log.append(self.vel_x)
-                self.vel_y_log.append(self.vel_y)
-                print(f"Vel_x: {self.vel_x}, Vel_y: {self.vel_y}")
+                # self.vel_x_log.append(self.vel_x)
+                # self.vel_y_log.append(self.vel_y)
+                # print(f"Vel_x: {self.vel_x}, Vel_y: {self.vel_y}")
 
-                self.x_log.append(self.x)
-                self.y_log.append(self.y)
-                print(f"x: {self.x}, y: {self.y}")
+                # self.x_log.append(self.x)
+                # self.y_log.append(self.y)
+                # print(f"x: {self.x}, y: {self.y}")
 
         except zmq.Again as e:
             pass
