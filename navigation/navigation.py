@@ -171,6 +171,7 @@ def update_navigation_state(state: NavigationState, pub: zmq.Socket):
         # state.distToNextStep = 5
         state.distToNextStep = dist_to_next
         path = []
+        cancel_navigation(state, pub)
         notification = NavMessages.CANCELLED
     else:
         # curr_pos = [(currentX), (currentY)]
@@ -207,9 +208,11 @@ def update_navigation_state(state: NavigationState, pub: zmq.Socket):
         if (len(path) == 0 and is_barrier):
             heading = find_heading(currentX, currentY, end_x, end_y)
             next_step = "Arrived"
+            cancel_navigation(state, pub)
         elif (len(path) == 0 and not(is_barrier)):
             heading = state.desiredHeading
             next_step = "Arrived"
+            cancel_navigation(state, pub)
         else:
             heading = find_heading(currentX, currentY, path[0].x, path[0].y)
             next_step = directions[0]
